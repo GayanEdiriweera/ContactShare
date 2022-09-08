@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <head>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+  />
   <script src="js/qrcodegen-v1.8.0-es6.js"></script>
   <script type="module" src="js/main.js"></script>
   <title>Contact Share</title>
@@ -9,6 +13,11 @@
     href="https://upload.wikimedia.org/wikipedia/commons/8/83/LCH_Gradient_Example.png"
   />
 
+  <!-- Disable ios zoom on input focus -->
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
   <!-- Progressive web app support -->
   <link rel="manifest" href="manifest.json" />
   <script>
@@ -24,31 +33,158 @@
   </script>
 
   <style>
-    #output {
-      width: 200px;
-      height: 200px;
-      image-rendering: pixelated;
-      display: block;
-      text-align: center;
+    * {
+      font-size: 4vw;
+      white-space: nowrap;
     }
-
-    #user-data {
+    body {
+      background-color: white;
+      overflow: hidden;
+    }
+    .info-area {
+      box-sizing: border-box;
+      display: block;
+      overflow-y: scroll;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 4rem;
+    }
+    .footer-area {
+      display: block;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4rem;
+    }
+    .main-button {
+      height: 100%;
+      width: 100%;
+      border: 0;
+      padding: 0;
+      background-color: rgb(0, 179, 255);
+      color: white;
+    }
+    .info-container {
+      padding: 1rem;
       display: flex;
       flex-direction: column;
     }
-
+    .row {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+    .add-info-button {
+      width: 100%;
+      height: 3rem;
+      color: rgb(0, 179, 255);
+    }
     input {
-      margin: 4px;
-      height: 40px;
+      box-sizing: border-box;
+      width: 100%;
+      height: 3rem;
+      border: 0.1rem solid;
+      padding: 0.3rem;
+    }
+    /* Full Screen Semi-Transparent */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      background-color: rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-content {
+      position: absolute;
+      background-color: #fefefe;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      aspect-ratio: 1;
+      padding: 0.3rem;
+    }
+
+    .modal-button {
+      display: block;
+      top: 0;
+      margin-left: auto;
+    }
+
+    .modal-canvas {
+      box-sizing: border-box;
+      display: block;
+      width: 100%;
+      bottom: 0;
+      aspect-ratio: 1;
+      padding: 1rem;
+      image-rendering: pixelated;
     }
   </style>
 </head>
 <body>
-  <canvas id="output"></canvas>
-  <br />
-  <div id="user-data">
-    <input placeholder="First Name" id="firstname" />
-    <input placeholder="Surname" id="surname" />
-    <input placeholder="Phone number" id="phone" type="tel" />
+  <div class="info-area">
+    <div class="info-container">
+      <div class="row"><i class="fa-solid fa-circle-info"></i> Basic Info</div>
+      <div class="row">
+        <input placeholder="First Name" id="firstname" />
+      </div>
+      <div class="row">
+        <input placeholder="Last Name" id="lastname" />
+      </div>
+      <!--
+      <div class="row"><i class="fa-solid fa-phone"></i> Phone</div>
+      <div class="row">
+        <button class="add-info-button">
+          <i class="fa-solid fa-plus"></i> Add phone number
+        </button>
+      </div>
+      <div class="row"><i class="fa-solid fa-envelope"></i> Email</div>
+      <div class="row">
+        <button class="add-info-button">
+          <i class="fa-solid fa-plus"></i> Add email address
+        </button>
+      </div>
+      <div class="row"><i class="fa-solid fa-users"></i> Social</div>
+      <div class="row">
+        <button class="add-info-button">
+          <i class="fa-solid fa-plus"></i> Add social profile
+        </button>
+      </div>
+      <div class="row"><i class="fa-sharp fa-solid fa-link"></i> Website</div>
+      <div class="row">
+        <button class="add-info-button">
+          <i class="fa-solid fa-plus"></i> Add web address
+        </button>
+      </div>
+      <div class="row">
+        <i class="fa-solid fa-message"></i> Instant Messaging
+      </div>
+      <div class="row">
+        <button class="add-info-button">
+          <i class="fa-solid fa-plus"></i> Add messaging profile
+        </button>
+      </div>
+      -->
+    </div>
+  </div>
+  <div class="footer-area">
+    <button class="main-button" id="qr-code-button">
+      <i class="fa-solid fa-qrcode"></i> Generate QR code
+    </button>
+  </div>
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <button class="modal-button" id="modal-close-button">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <canvas class="modal-canvas" id="qr-code-canvas"></canvas>
+    </div>
   </div>
 </body>

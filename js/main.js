@@ -1,38 +1,55 @@
-let canvas = document.getElementById("output");
+var modal = document.getElementById("modal");
+
+let canvas = document.getElementById("qr-code-canvas");
 let context = canvas.getContext("2d");
 
 document.getElementById("firstname").addEventListener("input", onValueChanged);
-document.getElementById("surname").addEventListener("input", onValueChanged);
-document.getElementById("phone").addEventListener("input", onValueChanged);
+document.getElementById("lastname").addEventListener("input", onValueChanged);
+
+document
+  .getElementById("modal-close-button")
+  .addEventListener("click", (event) => {
+    modal.style.display = "none";
+  });
+
+document.getElementById("qr-code-button").addEventListener("click", () => {
+  modal.style.display = "block";
+  rebuild();
+});
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function (event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+};
 
 let userData = {
   firstname: "",
-  surname: "",
-  phone: "",
+  lastname: "",
 };
 function onValueChanged(event) {
   const id = event.target.id;
   userData[id] = event.target.value;
   saveUserData(userData);
-  rebuild();
 }
 
 function rebuild() {
   let vCard = buildVCard(
     userData["firstname"],
-    userData["surname"],
+    userData["lastname"],
     userData["phone"]
   );
   let code = qrcodegen.QrCode.encodeText(vCard, qrcodegen.QrCode.Ecc.MEDIUM);
   updateCanvas(code);
 }
 
-function buildVCard(firstname, surname, phone) {
-  console.log(`${firstname} ${surname} ${phone}`);
+function buildVCard(firstname, lastname, phone) {
+  console.log(`${firstname} ${lastname} ${phone}`);
   return `\
 BEGIN:VCARD
 VERSION:4.0
-N:${surname ?? ""};${firstname ?? ""};;
+N:${lastname ?? ""};${firstname ?? ""};;
 TEL;TYPE#home,voice;VALUE#uri:tel:${phone}
 END:VCARD`;
 }
@@ -66,5 +83,4 @@ window.addEventListener("load", (event) => {
   for (const key of Object.keys(userData)) {
     document.getElementById(key).value = userData[key];
   }
-  rebuild();
 });
