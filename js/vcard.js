@@ -3,7 +3,7 @@ export function buildVCard(firstname, surname, phones, emails, links) {
 BEGIN:VCARD
 VERSION:3.0
 PRODID:https://pass.contact
-N:${surname ?? ""};${firstname ?? ""};;
+N:${surname ?? ""};${firstname ?? ""};;;
 FN:${firstname} ${surname}\n`;
 
   for (const { type, parameter } of phones) {
@@ -45,8 +45,8 @@ function buildVCardLine(property, types, parameter) {
 function escape(text) {
   // RFC says must not escape any other characters
   return text
+    .replaceAll("\\", `\\\\`)
+    .replaceAll("\n", "\\n")
     .replaceAll(",", "\\,")
-    .replaceAll(";", "\\;")
-    .replaceAll("\\", "\\\\")
-    .replaceAll("\n", "\\n");
+    .replaceAll(";", `\\;`);
 }
