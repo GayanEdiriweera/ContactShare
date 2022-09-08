@@ -1,3 +1,5 @@
+import { buildVCard } from "./vcard.js";
+
 var modal = document.getElementById("modal");
 
 let canvas = document.getElementById("qr-code-canvas");
@@ -42,21 +44,12 @@ function rebuild() {
   let vCard = buildVCard(
     userData["firstname"],
     userData["lastname"],
-    userData["phone"],
-    userData["email"]
+    [{ type: "", parameter: userData["phone"] }],
+    [{ type: "", parameter: userData["email"] }],
+    [{ type: "Made by", parameter: "https://pass.contact" }]
   );
   let code = qrcodegen.QrCode.encodeText(vCard, qrcodegen.QrCode.Ecc.MEDIUM);
   updateCanvas(code);
-}
-
-function buildVCard(firstname, lastname, phone, email) {
-  return `\
-BEGIN:VCARD
-VERSION:4.0
-N:${lastname ?? ""};${firstname ?? ""};;
-TEL:${phone}
-EMAIL:${email}
-END:VCARD`;
 }
 
 function updateCanvas(code) {
