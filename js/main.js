@@ -5,6 +5,8 @@ let context = canvas.getContext("2d");
 
 document.getElementById("firstname").addEventListener("input", onValueChanged);
 document.getElementById("lastname").addEventListener("input", onValueChanged);
+document.getElementById("phone").addEventListener("input", onValueChanged);
+document.getElementById("email").addEventListener("input", onValueChanged);
 
 document
   .getElementById("modal-close-button")
@@ -27,6 +29,8 @@ window.onclick = function (event) {
 let userData = {
   firstname: "",
   lastname: "",
+  phone: "",
+  email: "",
 };
 function onValueChanged(event) {
   const id = event.target.id;
@@ -38,19 +42,20 @@ function rebuild() {
   let vCard = buildVCard(
     userData["firstname"],
     userData["lastname"],
-    userData["phone"]
+    userData["phone"],
+    userData["email"]
   );
   let code = qrcodegen.QrCode.encodeText(vCard, qrcodegen.QrCode.Ecc.MEDIUM);
   updateCanvas(code);
 }
 
-function buildVCard(firstname, lastname, phone) {
-  console.log(`${firstname} ${lastname} ${phone}`);
+function buildVCard(firstname, lastname, phone, email) {
   return `\
 BEGIN:VCARD
 VERSION:4.0
 N:${lastname ?? ""};${firstname ?? ""};;
-TEL;TYPE#home,voice;VALUE#uri:tel:${phone}
+TEL:${phone}
+EMAIL:${email}
 END:VCARD`;
 }
 
