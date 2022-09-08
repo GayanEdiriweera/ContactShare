@@ -9,6 +9,7 @@ document.getElementById("firstname").addEventListener("input", onValueChanged);
 document.getElementById("lastname").addEventListener("input", onValueChanged);
 document.getElementById("phone").addEventListener("input", onValueChanged);
 document.getElementById("email").addEventListener("input", onValueChanged);
+document.getElementById("linkedin").addEventListener("input", onValueChanged);
 
 document
   .getElementById("modal-close-button")
@@ -33,6 +34,7 @@ let userData = {
   lastname: "",
   phone: "",
   email: "",
+  linkedin: "",
 };
 function onValueChanged(event) {
   const id = event.target.id;
@@ -44,9 +46,12 @@ function rebuild() {
   let vCard = buildVCard(
     userData["firstname"],
     userData["lastname"],
-    [{ type: "", parameter: userData["phone"] }],
+    [{ type: "cell", parameter: userData["phone"] }],
     [{ type: "", parameter: userData["email"] }],
-    [{ type: "Made by", parameter: "https://pass.contact" }]
+    [
+      { type: "LinkedIn", parameter: userData["linkedin"] },
+      { type: "Made with", parameter: "https://pass.contact" },
+    ]
   );
   let code = qrcodegen.QrCode.encodeText(vCard, qrcodegen.QrCode.Ecc.MEDIUM);
   updateCanvas(code);
