@@ -21,16 +21,20 @@ header.addEventListener("click", () => {
   }
 });
 
-// When the user clicks anywhere outside of the modal, close it
-window.addEventListener("mousedown", function (event) {
-  if (event.target === modalBackground) {
-    if (passMode) {
-      modalBackground.style.display = "none";
-      header.style.height = "4rem";
-      passMode = false;
+let eventsArray = ["mousedown", "touchend"];
+eventsArray.forEach(function (eventName) {
+  // When the user clicks anywhere outside of the modal, close it
+  window.addEventListener(eventName, function (event) {
+    if (event.target === modalBackground) {
+      if (passMode) {
+        modalBackground.style.display = "none";
+        header.style.height = "4rem";
+        passMode = false;
+      }
+      event.preventDefault();
+      event.stopPropagationImmediate();
     }
-    event.stopPropagation();
-  }
+  });
 });
 
 let userData = {
