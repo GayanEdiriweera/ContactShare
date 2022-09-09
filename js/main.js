@@ -1,6 +1,7 @@
 import { buildVCard } from "./vcard.js";
 
 var header = document.getElementById("header");
+let headerExpandIcon = document.getElementById("header-expand-icon");
 var modalBackground = document.getElementById("modal-background");
 
 let canvas = document.getElementById("qr-code-canvas");
@@ -16,6 +17,7 @@ let passMode = false;
 header.addEventListener("click", () => {
   if (!passMode) {
     modalBackground.style.display = "block";
+    headerExpandIcon.style.display = "none";
     header.style.height = "100vw";
     passMode = true;
   }
@@ -28,6 +30,7 @@ eventsArray.forEach(function (eventName) {
     if (event.target === modalBackground) {
       if (passMode) {
         modalBackground.style.display = "none";
+        headerExpandIcon.style.display = "block";
         header.style.height = "4rem";
         passMode = false;
       }

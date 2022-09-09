@@ -107,6 +107,12 @@
       aspect-ratio: 1;
       image-rendering: pixelated;
     }
+    .header-icon {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: inherit;
+    }
   </style>
 </head>
 <body>
@@ -153,5 +159,8 @@
   <div class="modal" id="modal-background"></div>
   <div class="header-area" id="header">
     <canvas class="modal-canvas" id="qr-code-canvas"></canvas>
+    <div class="header-icon" id="header-expand-icon">
+      <i class="fa-solid fa-expand fa-lg"></i>
+    </div>
   </div>
 </body>
