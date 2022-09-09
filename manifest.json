@@ -1,18 +1,18 @@
 {
-  "name": "Contact Share",
-  "short_name": "Contact Share",
+  "name": "pass.contact",
+  "short_name": "pass.contact",
   "theme_color": "#000000",
   "background_color": "#ffffff",
   "display": "standalone",
   "scope": "/",
-  "start_url": "https://gayanediriweera.github.io/ContactShare/",
-  "description": "A simple tool for managing and sharing your contact information",
+  "start_url": "https://pass.contact/",
+  "description": "A simple way to generate QR codes from your contact information and pass the information directly from your device to someone else's device",
   "orientation": "any",
   "icons": [
     {
-      "src": "https://upload.wikimedia.org/wikipedia/commons/8/83/LCH_Gradient_Example.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
     }
   ]
 }
