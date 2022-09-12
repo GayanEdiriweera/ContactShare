@@ -1,11 +1,23 @@
 import { buildVCard } from "./vcard.js";
 
-var header = document.getElementById("header");
-let headerExpandIcon = document.getElementById("header-expand-icon");
-var modalBackground = document.getElementById("modal-background");
-
-let canvas = document.getElementById("qr-code-canvas");
+let header = document.getElementById("header");
+let headerCanvasContainer = document.getElementById("header-canvas-container");
+let canvas = document.getElementById("canvas");
 let context = canvas.getContext("2d");
+
+function updateCanvasContainerHeight() {
+  var newSize =
+    Math.max(
+      header.offsetHeight - document.documentElement.scrollTop,
+      0
+    ).toString() + "px";
+  headerCanvasContainer.style.height = newSize;
+
+  // This is a hack to force ios to reflow content when scrolling to input focus
+  headerCanvasContainer.style.display = "none";
+  headerCanvasContainer.offsetHeight;
+  headerCanvasContainer.style.display = "";
+}
 
 document.getElementById("firstname").addEventListener("input", onValueChanged);
 document.getElementById("lastname").addEventListener("input", onValueChanged);
@@ -13,31 +25,8 @@ document.getElementById("phone").addEventListener("input", onValueChanged);
 document.getElementById("email").addEventListener("input", onValueChanged);
 document.getElementById("linkedin").addEventListener("input", onValueChanged);
 
-let passMode = false;
 header.addEventListener("click", () => {
-  if (!passMode) {
-    modalBackground.style.display = "block";
-    headerExpandIcon.style.display = "none";
-    header.style.height = "100vw";
-    passMode = true;
-  }
-});
-
-let eventsArray = ["mousedown", "touchend"];
-eventsArray.forEach(function (eventName) {
-  // When the user clicks anywhere outside of the modal, close it
-  window.addEventListener(eventName, function (event) {
-    if (event.target === modalBackground) {
-      if (passMode) {
-        modalBackground.style.display = "none";
-        headerExpandIcon.style.display = "block";
-        header.style.height = "4rem";
-        passMode = false;
-      }
-      event.preventDefault();
-      event.stopPropagationImmediate();
-    }
-  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
 let userData = {
@@ -70,20 +59,15 @@ function rebuild() {
 }
 
 function updateCanvas(code) {
-  // render code with 1 module border
-  canvas.width = code.size + 2;
-  canvas.height = code.size + 2;
+  canvas.width = code.size;
+  canvas.height = code.size;
 
   let black = "rgb(0,0,0)";
   let white = "rgb(255,255,255)";
 
   for (var y = 0; y < canvas.height; y++) {
     for (var x = 0; x < canvas.width; x++) {
-      let isBorder =
-        x == 0 || y == 0 || x == canvas.height - 1 || y == canvas.height - 1;
-
-      context.fillStyle =
-        !isBorder && code.modules[y - 1][x - 1] ? black : white;
+      context.fillStyle = code.modules[y][x] ? black : white;
       context.fillRect(x, y, 1, 1);
     }
   }
@@ -105,4 +89,12 @@ window.addEventListener("load", (event) => {
   for (const key of Object.keys(userData)) {
     document.getElementById(key).value = userData[key];
   }
+  updateCanvasContainerHeight();
+});
+
+window.addEventListener("scroll", (event) => {
+  updateCanvasContainerHeight();
+});
+window.addEventListener("resize", (event) => {
+  updateCanvasContainerHeight();
 });
