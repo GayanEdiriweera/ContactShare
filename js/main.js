@@ -5,13 +5,14 @@ let headerCanvasContainer = document.getElementById("header-canvas-container");
 let canvas = document.getElementById("canvas");
 let context = canvas.getContext("2d");
 
-function updateCanvasContainerHeight() {
-  var newSize =
-    Math.max(
-      header.offsetHeight - document.documentElement.scrollTop,
-      0
-    ).toString() + "px";
-  headerCanvasContainer.style.height = newSize;
+function codeContainerSizePixels() {
+  return Math.max(header.offsetHeight - document.documentElement.scrollTop, 0);
+}
+
+function updateCodeContainerHeight() {
+  let newSize = codeContainerSizePixels();
+
+  headerCanvasContainer.style.height = newSize.toString() + "px";
 
   // This is a hack to force ios to reflow content when scrolling to input focus
   headerCanvasContainer.style.display = "none";
@@ -23,7 +24,9 @@ document.getElementById("firstname").addEventListener("input", onValueChanged);
 document.getElementById("lastname").addEventListener("input", onValueChanged);
 document.getElementById("phone").addEventListener("input", onValueChanged);
 document.getElementById("email").addEventListener("input", onValueChanged);
-document.getElementById("linkedin").addEventListener("input", onValueChanged);
+document.getElementById("url").addEventListener("input", onValueChanged);
+document.getElementById("url2").addEventListener("input", onValueChanged);
+document.getElementById("url3").addEventListener("input", onValueChanged);
 
 header.addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -32,9 +35,9 @@ header.addEventListener("click", () => {
 let userData = {
   firstname: "",
   lastname: "",
-  phone: "",
-  email: "",
-  linkedin: "",
+  phones: [],
+  emails: [],
+  links: [],
 };
 function onValueChanged(event) {
   const id = event.target.id;
@@ -50,7 +53,9 @@ function rebuild() {
     [{ type: "cell", parameter: userData["phone"] }],
     [{ type: "", parameter: userData["email"] }],
     [
-      { type: "LinkedIn", parameter: userData["linkedin"] },
+      { type: "", parameter: userData["url"] },
+      { type: "", parameter: userData["url2"] },
+      { type: "", parameter: userData["url3"] },
       { type: "Made with", parameter: "https://pass.contact" },
     ]
   );
@@ -85,16 +90,20 @@ function loadUserData() {
 
 window.addEventListener("load", (event) => {
   userData = loadUserData();
-  rebuild();
   for (const key of Object.keys(userData)) {
+    if (!document.getElementById(key)) {
+      delete userData[key];
+      continue;
+    }
     document.getElementById(key).value = userData[key];
   }
-  updateCanvasContainerHeight();
+  rebuild();
+  updateCodeContainerHeight(event);
 });
 
 window.addEventListener("scroll", (event) => {
-  updateCanvasContainerHeight();
+  updateCodeContainerHeight();
 });
 window.addEventListener("resize", (event) => {
-  updateCanvasContainerHeight();
+  updateCodeContainerHeight();
 });
