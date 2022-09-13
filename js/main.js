@@ -6,12 +6,15 @@ let canvas = document.getElementById("canvas");
 let context = canvas.getContext("2d");
 
 function codeContainerSizePixels() {
-  return Math.max(header.offsetHeight - document.documentElement.scrollTop, 0);
+  return Math.max(
+    Math.min(header.clientWidth, header.clientHeight - header.clientTop) -
+      document.documentElement.scrollTop,
+    0
+  );
 }
 
 function updateCodeContainerHeight() {
   let newSize = codeContainerSizePixels();
-
   headerCanvasContainer.style.height = newSize.toString() + "px";
 
   // This is a hack to force ios to reflow content when scrolling to input focus
