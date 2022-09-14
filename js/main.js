@@ -1,5 +1,28 @@
 import { buildVCard } from "./vcard.js";
 
+let version = "1.0.0";
+let activeProfileIndex = 0;
+let userData = [
+  {
+    firstname: "",
+    lastname: "",
+    phone: "",
+    email: "",
+    url: "",
+    url2: "",
+    url3: "",
+  },
+  {
+    firstname: "",
+    lastname: "",
+    phone: "",
+    email: "",
+    url: "",
+    url2: "",
+    url3: "",
+  },
+];
+
 var rootStyle = getComputedStyle(document.querySelector(":root"));
 var dark = rootStyle.getPropertyValue("--dark");
 var light = rootStyle.getPropertyValue("--light");
@@ -8,10 +31,33 @@ let header = document.getElementById("header");
 let headerCanvasContainer = document.getElementById("header-canvas-container");
 let canvas2d = document.getElementById("canvas-2d");
 let context2d = canvas2d.getContext("2d");
+let tabs = document.getElementById("tabs");
+
+document.getElementById("firstname").addEventListener("input", onValueChanged);
+document.getElementById("lastname").addEventListener("input", onValueChanged);
+document.getElementById("phone").addEventListener("input", onValueChanged);
+document.getElementById("email").addEventListener("input", onValueChanged);
+document.getElementById("url").addEventListener("input", onValueChanged);
+document.getElementById("url2").addEventListener("input", onValueChanged);
+document.getElementById("url3").addEventListener("input", onValueChanged);
+
+tabs.addEventListener("click", (event) => {
+  let children = Array.from(tabs.children);
+  activeProfileIndex = children.indexOf(event.target);
+
+  for (let i = 0; i < children.length; i++) {
+    if (i == activeProfileIndex) {
+      children[i].className = "active-tab";
+    } else {
+      children[i].className = "inactive-tab";
+    }
+  }
+  refillData();
+  rebuild();
+});
 
 function codeContainerSizePixels() {
-  const codeAnimation = true;
-
+  const codeAnimation = false;
   if (codeAnimation) {
     return Math.max(
       Math.min(header.clientWidth, header.clientHeight - header.clientTop) -
@@ -33,42 +79,33 @@ function updateCodeContainerHeight() {
   headerCanvasContainer.style.display = "";
 }
 
-document.getElementById("firstname").addEventListener("input", onValueChanged);
-document.getElementById("lastname").addEventListener("input", onValueChanged);
-document.getElementById("phone").addEventListener("input", onValueChanged);
-document.getElementById("email").addEventListener("input", onValueChanged);
-document.getElementById("url").addEventListener("input", onValueChanged);
-document.getElementById("url2").addEventListener("input", onValueChanged);
-document.getElementById("url3").addEventListener("input", onValueChanged);
-
 header.addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-let userData = {
-  firstname: "",
-  lastname: "",
-  phones: [],
-  emails: [],
-  links: [],
-};
 function onValueChanged(event) {
   const id = event.target.id;
-  userData[id] = event.target.value;
+  userData[activeProfileIndex][id] = event.target.value;
   saveUserData(userData);
   rebuild();
 }
 
+function refillData() {
+  for (const key of Object.keys(userData[activeProfileIndex])) {
+    document.getElementById(key).value = userData[activeProfileIndex][key];
+  }
+}
+
 function rebuild() {
   let vCard = buildVCard(
-    userData["firstname"],
-    userData["lastname"],
-    [{ type: "cell", parameter: userData["phone"] }],
-    [{ type: "", parameter: userData["email"] }],
+    userData[activeProfileIndex]["firstname"],
+    userData[activeProfileIndex]["lastname"],
+    [{ type: "cell", parameter: userData[activeProfileIndex]["phone"] }],
+    [{ type: "", parameter: userData[activeProfileIndex]["email"] }],
     [
-      { type: "", parameter: userData["url"] },
-      { type: "", parameter: userData["url2"] },
-      { type: "", parameter: userData["url3"] },
+      { type: "", parameter: userData[activeProfileIndex]["url"] },
+      { type: "", parameter: userData[activeProfileIndex]["url2"] },
+      { type: "", parameter: userData[activeProfileIndex]["url3"] },
       { type: "Made with", parameter: "https://pass.contact" },
     ]
   );
@@ -94,19 +131,19 @@ function saveUserData(userData) {
 }
 
 function loadUserData() {
-  const userDataString = localStorage.getItem("userData") ?? "{}";
+  if (localStorage.getItem("version") != version) {
+    localStorage.clear();
+    localStorage.setItem("version", version);
+  }
+
+  const userDataString =
+    localStorage.getItem("userData") ?? JSON.stringify(userData);
   return JSON.parse(userDataString);
 }
 
 window.addEventListener("load", (event) => {
   userData = loadUserData();
-  for (const key of Object.keys(userData)) {
-    if (!document.getElementById(key)) {
-      delete userData[key];
-      continue;
-    }
-    document.getElementById(key).value = userData[key];
-  }
+  refillData();
   rebuild();
   updateCodeContainerHeight(event);
 });
