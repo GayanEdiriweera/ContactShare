@@ -41,17 +41,20 @@ document.getElementById("url").addEventListener("input", onValueChanged);
 document.getElementById("url2").addEventListener("input", onValueChanged);
 document.getElementById("url3").addEventListener("input", onValueChanged);
 
-tabs.addEventListener("click", (event) => {
-  let children = Array.from(tabs.children);
-  activeProfileIndex = children.indexOf(event.target);
-
-  for (let i = 0; i < children.length; i++) {
-    if (i == activeProfileIndex) {
-      children[i].className = "active-tab";
-    } else {
-      children[i].className = "inactive-tab";
-    }
+function classifyTabs() {
+  let elements = Array.from(tabs.children);
+  for (let i = 0; i < elements.length; i++) {
+    elements[i].setAttribute("active", i == activeProfileIndex);
+    elements[i].setAttribute("first", i == 0);
+    elements[i].setAttribute("last", i == elements.length - 1);
   }
+}
+
+tabs.addEventListener("click", (event) => {
+  let elements = Array.from(tabs.children);
+  activeProfileIndex = elements.indexOf(event.target);
+
+  classifyTabs();
   refillData();
   rebuild();
 });
@@ -146,6 +149,7 @@ window.addEventListener("load", (event) => {
   refillData();
   rebuild();
   updateCodeContainerHeight(event);
+  classifyTabs();
 });
 
 window.addEventListener("scroll", (event) => {
