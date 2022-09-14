@@ -31,9 +31,15 @@
   </script>
 
   <style>
+    :root {
+      --dark: black;
+      --light: white;
+    }
     * {
       white-space: nowrap;
       font-size: large;
+      color: var(--dark);
+      font-family: sans-serif;
     }
     html,
     body {
@@ -48,11 +54,9 @@
       background-color: black;
     }
     body {
-      background-color: black;
+      background-color: var(--dark);
       overflow-y: scroll;
-      border: 0.1rem solid white;
-      border-radius: 2.25rem;
-      overflow-y: scroll;
+      border-radius: 0 0 2.25rem 2.25rem;
     }
     .header-area {
       display: flex;
@@ -67,19 +71,19 @@
 
       margin-left: auto;
       margin-right: auto;
+      overflow: visible;
     }
-    canvas {
-      background-color: white;
-      border-radius: calc(2.25rem - 0.5rem);
-
-      padding: calc(2.25rem - 0.5rem);
+    #canvas-2d {
+      background-color: var(--light);
+      border-radius: 0.1rem;
+      padding: 2%;
       box-sizing: border-box;
       height: 100%;
       image-rendering: pixelated;
     }
     .details-area {
-      background-color: white;
-      border-radius: calc(2.25rem - 0.5rem);
+      background-color: var(--light);
+      border-radius: 0.1rem 0.1rem calc(2.25rem - 0.5rem) calc(2.25rem - 0.5rem);
       margin: 0.5rem;
     }
     .details-item-container {
@@ -97,6 +101,7 @@
       color: rgb(0, 179, 255);
     }
     input {
+      background-color: var(--light);
       box-sizing: border-box;
       width: 100%;
       height: 3rem;
@@ -108,7 +113,7 @@
 <body>
   <div class="header-area" id="header">
     <div class="canvas-container" id="header-canvas-container">
-      <canvas id="canvas"></canvas>
+      <canvas id="canvas-2d"></canvas>
     </div>
   </div>
   <div class="details-area" id="details">
@@ -121,9 +126,13 @@
         <input placeholder="Last Name" id="lastname" />
       </div>
       <div class="row"><i class="fa-solid fa-phone"></i> Phone</div>
-      <input placeholder="Phone" id="phone" />
+      <div class="row">
+        <input placeholder="Phone" id="phone" />
+      </div>
       <div class="row"><i class="fa-solid fa-envelope"></i> Email</div>
-      <input placeholder="Email" id="email" />
+      <div class="row">
+        <input placeholder="Email" id="email" />
+      </div>
       <div class="row"><i class="fa-solid fa-link"></i> Links</div>
       <div class="row">
         <input placeholder="URL" id="url" />

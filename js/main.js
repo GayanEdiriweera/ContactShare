@@ -1,16 +1,26 @@
 import { buildVCard } from "./vcard.js";
 
+var rootStyle = getComputedStyle(document.querySelector(":root"));
+var dark = rootStyle.getPropertyValue("--dark");
+var light = rootStyle.getPropertyValue("--light");
+
 let header = document.getElementById("header");
 let headerCanvasContainer = document.getElementById("header-canvas-container");
-let canvas = document.getElementById("canvas");
-let context = canvas.getContext("2d");
+let canvas2d = document.getElementById("canvas-2d");
+let context2d = canvas2d.getContext("2d");
 
 function codeContainerSizePixels() {
-  return Math.max(
-    Math.min(header.clientWidth, header.clientHeight - header.clientTop) -
-      document.documentElement.scrollTop,
-    0
-  );
+  const codeAnimation = true;
+
+  if (codeAnimation) {
+    return Math.max(
+      Math.min(header.clientWidth, header.clientHeight - header.clientTop) -
+        document.documentElement.scrollTop,
+      0
+    );
+  } else {
+    return header.clientHeight;
+  }
 }
 
 function updateCodeContainerHeight() {
@@ -63,19 +73,16 @@ function rebuild() {
     ]
   );
   let code = qrcodegen.QrCode.encodeText(vCard, qrcodegen.QrCode.Ecc.MEDIUM);
-  updateCanvas(code);
+  renderCanvas2d(canvas2d, context2d, code, dark, light);
 }
 
-function updateCanvas(code) {
+function renderCanvas2d(canvas, context, code, dark, light) {
   canvas.width = code.size;
   canvas.height = code.size;
 
-  let black = "rgb(0,0,0)";
-  let white = "rgb(255,255,255)";
-
   for (var y = 0; y < canvas.height; y++) {
     for (var x = 0; x < canvas.width; x++) {
-      context.fillStyle = code.modules[y][x] ? black : white;
+      context.fillStyle = code.modules[y][x] ? dark : light;
       context.fillRect(x, y, 1, 1);
     }
   }
