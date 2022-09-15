@@ -60,22 +60,16 @@ tabs.addEventListener("click", (event) => {
 });
 
 function codeContainerSizePixels() {
-  const codeAnimation = false;
-  if (codeAnimation) {
-    return Math.max(
-      Math.min(header.clientWidth, header.clientHeight - header.clientTop) -
-        document.documentElement.scrollTop,
-      0
-    );
-  } else {
-    return header.clientHeight;
-  }
+  return Math.max(
+    Math.min(header.clientWidth, header.clientHeight - header.clientTop) -
+      document.documentElement.scrollTop,
+    0
+  );
 }
 
 function updateCodeContainerHeight() {
   let newSize = codeContainerSizePixels();
   headerCanvasContainer.style.height = newSize.toString() + "px";
-
   // This is a hack to force ios to reflow content when scrolling to input focus
   headerCanvasContainer.style.display = "none";
   headerCanvasContainer.offsetHeight;
