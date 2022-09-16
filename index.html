@@ -58,7 +58,7 @@
       background-color: var(--dark);
       overflow-y: scroll;
     }
-    .header-area {
+    .presenter-area {
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
@@ -75,18 +75,26 @@
     }
     #canvas-2d {
       background-color: var(--light);
-      border-radius: 0;
       padding: 2%;
       box-sizing: border-box;
       height: 100%;
       image-rendering: pixelated;
     }
-    .details-area {
+    .editor-area {
       background-color: var(--light);
       border-radius: 0 0 calc(2.25rem - 0.5rem) calc(2.25rem - 0.5rem);
       margin: 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
-    .details-item-container {
+    .editor-contact {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .editor-note {
       padding: 1rem;
       display: flex;
       flex-direction: column;
@@ -95,7 +103,8 @@
       padding-top: 0.5rem;
       padding-bottom: 0.5rem;
     }
-    input {
+    input,
+    textarea {
       background-color: var(--light);
       box-sizing: border-box;
       width: 100%;
@@ -103,13 +112,15 @@
       border: 0.1rem solid;
       padding: 0.3rem;
     }
+    textarea {
+      height: 32rem;
+    }
     .tabs-area {
       display: flex;
       flex-direction: row;
       height: 3rem;
       bottom: 0;
       width: 100%;
-      margin: auto;
     }
     .tab {
       text-align: center;
@@ -139,13 +150,17 @@
   </style>
 </head>
 <body>
-  <div class="header-area" id="header">
-    <div class="canvas-container" id="header-canvas-container">
+  <div class="presenter-area" id="presenter">
+    <div class="canvas-container" id="canvas-container">
       <canvas id="canvas-2d"></canvas>
     </div>
   </div>
-  <div class="details-area" id="details">
-    <div class="details-item-container">
+  <div class="editor-area">
+    <div class="editor-note" editor="note">
+      <textarea id="text" rows="4" cols="50"></textarea>
+    </div>
+
+    <div class="editor-contact" editor="contact">
       <div class="row"><i class="fa-solid fa-circle-info"></i> Name</div>
       <div class="row">
         <input placeholder="First Name" id="firstname" />
@@ -172,9 +187,6 @@
         <input placeholder="URL" id="url3" />
       </div>
     </div>
-    <div class="tabs-area" id="tabs">
-      <div class="tab">Social</div>
-      <div class="tab">Work</div>
-    </div>
+    <div class="tabs-area" id="tabs"></div>
   </div>
 </body>

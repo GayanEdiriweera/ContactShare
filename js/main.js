@@ -1,25 +1,22 @@
 import { buildVCard } from "./vcard.js";
 
-let version = "1.0.0";
-let activeProfileIndex = 0;
-let userData = [
+let version = "1.0.1";
+let activePassIndex = 0;
+let passes = [
   {
-    firstname: "",
-    lastname: "",
-    phone: "",
-    email: "",
-    url: "",
-    url2: "",
-    url3: "",
+    type: "contact",
+    name: "Personal",
+    data: {},
   },
   {
-    firstname: "",
-    lastname: "",
-    phone: "",
-    email: "",
-    url: "",
-    url2: "",
-    url3: "",
+    type: "contact",
+    name: "Work",
+    data: {},
+  },
+  {
+    type: "note",
+    name: "Note",
+    data: { text: "Hello world!" },
   },
 ];
 
@@ -27,86 +24,115 @@ var rootStyle = getComputedStyle(document.querySelector(":root"));
 var dark = rootStyle.getPropertyValue("--dark");
 var light = rootStyle.getPropertyValue("--light");
 
-let header = document.getElementById("header");
-let headerCanvasContainer = document.getElementById("header-canvas-container");
+let presenter = document.getElementById("presenter");
+let canvasContainer = document.getElementById("canvas-container");
 let canvas2d = document.getElementById("canvas-2d");
 let context2d = canvas2d.getContext("2d");
 let tabs = document.getElementById("tabs");
+tabs.addEventListener("click", (event) => {
+  let elements = Array.from(tabs.children);
+  activePassIndex = elements.indexOf(event.target);
 
-document.getElementById("firstname").addEventListener("input", onValueChanged);
-document.getElementById("lastname").addEventListener("input", onValueChanged);
-document.getElementById("phone").addEventListener("input", onValueChanged);
-document.getElementById("email").addEventListener("input", onValueChanged);
-document.getElementById("url").addEventListener("input", onValueChanged);
-document.getElementById("url2").addEventListener("input", onValueChanged);
-document.getElementById("url3").addEventListener("input", onValueChanged);
+  refreshTabs();
+  refreshEditor(passes[activePassIndex]);
+  refreshPresenter(passes[activePassIndex]);
+});
 
-function classifyTabs() {
+function refreshTabs() {
+  while (tabs.childElementCount > passes.length) {
+    tabs.removeChild(tabs.firstElementChild());
+  }
+  while (tabs.childElementCount < passes.length) {
+    let tab = document.createElement("div");
+    tab.className = "tab";
+    tabs.appendChild(tab);
+  }
   let elements = Array.from(tabs.children);
   for (let i = 0; i < elements.length; i++) {
-    elements[i].setAttribute("active", i == activeProfileIndex);
-    elements[i].setAttribute("first", i == 0);
-    elements[i].setAttribute("last", i == elements.length - 1);
+    let tab = elements[i];
+    tab.innerHTML = passes[i].name;
+    tab.setAttribute("active", i == activePassIndex);
+    tab.setAttribute("first", i == 0);
+    tab.setAttribute("last", i == elements.length - 1);
   }
 }
 
-tabs.addEventListener("click", (event) => {
-  let elements = Array.from(tabs.children);
-  activeProfileIndex = elements.indexOf(event.target);
-
-  classifyTabs();
-  refillData();
-  rebuild();
-});
-
 function codeContainerSizePixels() {
   return Math.max(
-    Math.min(header.clientWidth, header.clientHeight - header.clientTop) -
-      document.documentElement.scrollTop,
+    Math.min(
+      presenter.clientWidth,
+      presenter.clientHeight - presenter.clientTop
+    ) - document.documentElement.scrollTop,
     0
   );
 }
 
 function updateCodeContainerHeight() {
-  let newSize = codeContainerSizePixels();
-  headerCanvasContainer.style.height = newSize.toString() + "px";
+  let newSizePixels = codeContainerSizePixels();
+  let newSizePercent = (newSizePixels / presenter.clientHeight) * 100;
+  canvasContainer.style.height = newSizePercent.toString() + "%";
+  canvasContainer.style.height = newSizePercent.toString() + "%";
+
   // This is a hack to force ios to reflow content when scrolling to input focus
-  headerCanvasContainer.style.display = "none";
-  headerCanvasContainer.offsetHeight;
-  headerCanvasContainer.style.display = "";
+  canvasContainer.style.display = "none";
+  canvasContainer.offsetHeight;
+  canvasContainer.style.display = "";
 }
 
-header.addEventListener("click", () => {
+presenter.addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-function onValueChanged(event) {
-  const id = event.target.id;
-  userData[activeProfileIndex][id] = event.target.value;
-  saveUserData(userData);
-  rebuild();
-}
+function refreshEditor(activePass) {
+  let editors = document.querySelectorAll("[editor]");
+  let editorSelector = "[editor=" + activePass.type + "]";
+  let editor = document.querySelector(editorSelector);
 
-function refillData() {
-  for (const key of Object.keys(userData[activeProfileIndex])) {
-    document.getElementById(key).value = userData[activeProfileIndex][key];
+  for (var i = 0; i < editors.length; i++) {
+    var e = editors[i];
+    e.style.display = e == editor ? "block" : "none";
+  }
+
+  let elements = document.querySelectorAll(
+    editorSelector + " input, " + editorSelector + " textarea"
+  );
+  for (let i = 0; i < elements.length; i++) {
+    let element = elements[i];
+    let key = element.id;
+    if (!activePass.data.hasOwnProperty(key)) {
+      activePass.data[key] = "";
+    }
+    element.value = activePass.data[key];
+    element.oninput = (event) => {
+      activePass.data[key] = event.target.value;
+      saveUserData(passes);
+      refreshPresenter(activePass);
+    };
   }
 }
 
-function rebuild() {
-  let vCard = buildVCard(
-    userData[activeProfileIndex]["firstname"],
-    userData[activeProfileIndex]["lastname"],
-    [{ type: "cell", parameter: userData[activeProfileIndex]["phone"] }],
-    [{ type: "", parameter: userData[activeProfileIndex]["email"] }],
-    [
-      { type: "", parameter: userData[activeProfileIndex]["url"] },
-      { type: "", parameter: userData[activeProfileIndex]["url2"] },
-      { type: "", parameter: userData[activeProfileIndex]["url3"] },
-      { type: "Made with", parameter: "https://pass.contact" },
-    ]
-  );
-  let code = qrcodegen.QrCode.encodeText(vCard, qrcodegen.QrCode.Ecc.MEDIUM);
+function refreshPresenter(activePass) {
+  let data = "";
+  switch (activePass.type) {
+    case "contact":
+      data = buildVCard(
+        activePass.data["firstname"],
+        activePass.data["lastname"],
+        [{ type: "cell", parameter: activePass.data["phone"] }],
+        [{ type: "", parameter: activePass.data["email"] }],
+        [
+          { type: "", parameter: activePass.data["url"] },
+          { type: "", parameter: activePass.data["url2"] },
+          { type: "", parameter: activePass.data["url3"] },
+          { type: "Made with", parameter: "https://pass.contact" },
+        ]
+      );
+      break;
+    case "note":
+      data = activePass.data["text"];
+      break;
+  }
+  let code = qrcodegen.QrCode.encodeText(data, qrcodegen.QrCode.Ecc.MEDIUM);
   renderCanvas2d(canvas2d, context2d, code, dark, light);
 }
 
@@ -133,17 +159,19 @@ function loadUserData() {
     localStorage.setItem("version", version);
   }
 
-  const userDataString =
-    localStorage.getItem("userData") ?? JSON.stringify(userData);
-  return JSON.parse(userDataString);
+  const userDataString = localStorage.getItem("userData");
+  if (userDataString) {
+    return JSON.parse(userDataString);
+  }
+  return passes;
 }
 
 window.addEventListener("load", (event) => {
-  userData = loadUserData();
-  refillData();
-  rebuild();
+  passes = loadUserData();
+  refreshEditor(passes[activePassIndex]);
+  refreshPresenter(passes[activePassIndex]);
   updateCodeContainerHeight(event);
-  classifyTabs();
+  refreshTabs(passes);
 });
 
 window.addEventListener("scroll", (event) => {
