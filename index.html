@@ -45,18 +45,19 @@
     html,
     body {
       margin: 0;
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
       display: block;
       background-color: var(--light);
     }
     .scroll-area {
       overflow-y: scroll;
       position: fixed;
-      height: calc(100% - 4rem);
-      width: calc(100% - 2rem);
+      top: 0;
+      bottom: 3rem;
+      left: 0;
+      right: 0;
       margin: 1rem;
       border-width: 0.1rem;
       box-sizing: border-box;
@@ -86,7 +87,6 @@
     }
     .editor-area {
       background-color: var(--light);
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
