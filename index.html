@@ -50,13 +50,17 @@
       top: 0;
       bottom: 0;
       display: block;
+      background-color: var(--light);
     }
-    html {
-      background-color: black;
-    }
-    body {
-      background-color: var(--dark);
+    .scroll-area {
       overflow-y: scroll;
+      position: fixed;
+      height: calc(100% - 4rem);
+      width: calc(100% - 2rem);
+      margin: 0 1rem 0 1rem;
+      border-width: 0.1rem;
+      box-sizing: border-box;
+      border-style: none solid none solid;
     }
     .presenter-area {
       display: flex;
@@ -82,20 +86,17 @@
     }
     .editor-area {
       background-color: var(--light);
-      border-radius: 0 0 calc(2.25rem - 0.5rem) calc(2.25rem - 0.5rem);
-      margin: 1rem;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      margin: 1rem;
     }
     .editor-contact {
-      padding: 1rem;
       display: flex;
       flex-direction: column;
     }
     .editor-note {
-      padding: 1rem;
       display: flex;
       flex-direction: column;
     }
@@ -118,9 +119,11 @@
     .tabs-area {
       display: flex;
       flex-direction: row;
+      position: fixed;
       height: 3rem;
       bottom: 0;
-      width: 100%;
+      width: calc(100% - 2rem);
+      margin: 0 1rem 1rem 1rem;
     }
     .tab {
       text-align: center;
@@ -132,7 +135,7 @@
     .tab[active="true"] {
       color: var(--dark);
       background-color: var(--light);
-      border-style: none solid none solid;
+      border-style: none solid solid solid;
     }
     .tab[active="false"] {
       color: var(--light);
@@ -141,52 +144,52 @@
     }
     .tab[first="true"] {
       border-radius: 0 0 0 1.75rem;
-      border-left-style: none;
     }
     .tab[last="true"] {
       border-radius: 0 0 1.75rem 0;
-      border-right-style: none;
     }
   </style>
 </head>
 <body>
-  <div class="presenter-area" id="presenter">
-    <div class="canvas-container" id="canvas-container">
-      <canvas id="canvas-2d"></canvas>
+  <div class="scroll-area" id="scroll-area">
+    <div class="presenter-area" id="presenter">
+      <div class="canvas-container" id="canvas-container">
+        <canvas id="canvas-2d"></canvas>
+      </div>
     </div>
-  </div>
-  <div class="editor-area">
-    <div class="editor-note" editor="note">
-      <textarea id="text" rows="4" cols="50"></textarea>
-    </div>
+    <div class="editor-area">
+      <div class="editor-note" editor="note">
+        <textarea id="text" rows="4" cols="50"></textarea>
+      </div>
 
-    <div class="editor-contact" editor="contact">
-      <div class="row"><i class="fa-solid fa-circle-info"></i> Name</div>
-      <div class="row">
-        <input placeholder="First Name" id="firstname" />
-      </div>
-      <div class="row">
-        <input placeholder="Last Name" id="lastname" />
-      </div>
-      <div class="row"><i class="fa-solid fa-phone"></i> Phone</div>
-      <div class="row">
-        <input placeholder="Phone" id="phone" />
-      </div>
-      <div class="row"><i class="fa-solid fa-envelope"></i> Email</div>
-      <div class="row">
-        <input placeholder="Email" id="email" />
-      </div>
-      <div class="row"><i class="fa-solid fa-link"></i> Links</div>
-      <div class="row">
-        <input placeholder="URL" id="url" />
-      </div>
-      <div class="row">
-        <input placeholder="URL" id="url2" />
-      </div>
-      <div class="row">
-        <input placeholder="URL" id="url3" />
+      <div class="editor-contact" editor="contact">
+        <div class="row"><i class="fa-solid fa-circle-info"></i> Name</div>
+        <div class="row">
+          <input placeholder="First Name" id="firstname" />
+        </div>
+        <div class="row">
+          <input placeholder="Last Name" id="lastname" />
+        </div>
+        <div class="row"><i class="fa-solid fa-phone"></i> Phone</div>
+        <div class="row">
+          <input placeholder="Phone" id="phone" />
+        </div>
+        <div class="row"><i class="fa-solid fa-envelope"></i> Email</div>
+        <div class="row">
+          <input placeholder="Email" id="email" />
+        </div>
+        <div class="row"><i class="fa-solid fa-link"></i> Links</div>
+        <div class="row">
+          <input placeholder="URL" id="url" />
+        </div>
+        <div class="row">
+          <input placeholder="URL" id="url2" />
+        </div>
+        <div class="row">
+          <input placeholder="URL" id="url3" />
+        </div>
       </div>
     </div>
-    <div class="tabs-area" id="tabs"></div>
   </div>
+  <div class="tabs-area" id="tabs"></div>
 </body>

@@ -24,6 +24,7 @@ var rootStyle = getComputedStyle(document.querySelector(":root"));
 var dark = rootStyle.getPropertyValue("--dark");
 var light = rootStyle.getPropertyValue("--light");
 
+let scrollArea = document.getElementById("scroll-area");
 let presenter = document.getElementById("presenter");
 let canvasContainer = document.getElementById("canvas-container");
 let canvas2d = document.getElementById("canvas-2d");
@@ -31,11 +32,13 @@ let context2d = canvas2d.getContext("2d");
 let tabs = document.getElementById("tabs");
 tabs.addEventListener("click", (event) => {
   let elements = Array.from(tabs.children);
-  activePassIndex = elements.indexOf(event.target);
-
-  refreshTabs();
-  refreshEditor(passes[activePassIndex]);
-  refreshPresenter(passes[activePassIndex]);
+  let index = elements.indexOf(event.target);
+  if (index >= 0) {
+    activePassIndex = index;
+    refreshTabs();
+    refreshEditor(passes[activePassIndex]);
+    refreshPresenter(passes[activePassIndex]);
+  }
 });
 
 function refreshTabs() {
@@ -58,13 +61,11 @@ function refreshTabs() {
 }
 
 function codeContainerSizePixels() {
-  return Math.max(
-    Math.min(
-      presenter.clientWidth,
-      presenter.clientHeight - presenter.clientTop
-    ) - document.documentElement.scrollTop,
-    0
+  let targetHeight = Math.min(
+    presenter.clientWidth,
+    presenter.clientHeight - scrollArea.scrollTop
   );
+  return Math.max(targetHeight, 0);
 }
 
 function updateCodeContainerHeight() {
@@ -174,7 +175,7 @@ window.addEventListener("load", (event) => {
   refreshTabs(passes);
 });
 
-window.addEventListener("scroll", (event) => {
+scrollArea.addEventListener("scroll", (event) => {
   updateCodeContainerHeight();
 });
 window.addEventListener("resize", (event) => {
