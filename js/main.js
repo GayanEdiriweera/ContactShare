@@ -72,7 +72,6 @@ function updateCodeContainerHeight() {
   let newSizePixels = codeContainerSizePixels();
   let newSizePercent = (newSizePixels / presenter.clientHeight) * 100;
   canvasContainer.style.height = newSizePercent.toString() + "%";
-  canvasContainer.style.height = newSizePercent.toString() + "%";
 
   // This is a hack to force ios to reflow content when scrolling to input focus
   canvasContainer.style.display = "none";
