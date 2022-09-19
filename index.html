@@ -47,18 +47,19 @@
       margin: 0;
       height: 100%;
       width: 100%;
-      overflow: hidden;
       display: block;
       background-color: var(--light);
+      touch-action: none;
+      overflow: hidden;
     }
     .scroll-area {
       overflow-y: scroll;
       position: fixed;
-      top: 0;
+      top: 1rem;
       bottom: 3rem;
-      left: 0;
-      right: 0;
-      margin: 1rem;
+      left: 1rem;
+      right: 1rem;
+      margin: 0;
       border-width: 0.1rem;
       box-sizing: border-box;
       border-style: solid solid none solid;
@@ -121,9 +122,10 @@
       flex-direction: row;
       position: fixed;
       height: 3rem;
-      bottom: 0;
-      width: calc(100% - 2rem);
-      margin: 0 1rem 1rem 1rem;
+      bottom: 1rem;
+      left: 1rem;
+      right: 1rem;
+      margin: 0;
     }
     .tab {
       text-align: center;
