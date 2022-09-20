@@ -1,6 +1,6 @@
 import { buildVCard } from "./vcard.js";
 
-let version = "1.0.1";
+let version = "1.0.2";
 let activePassIndex = 0;
 let passes = [
   {
@@ -14,9 +14,9 @@ let passes = [
     data: {},
   },
   {
-    type: "note",
-    name: "Note",
-    data: { text: "Hello world!" },
+    type: "contact",
+    name: "Other",
+    data: {},
   },
 ];
 

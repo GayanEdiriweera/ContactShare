@@ -55,20 +55,18 @@
     .scroll-area {
       overflow-y: scroll;
       position: fixed;
-      top: 1rem;
+      top: 0;
       bottom: 3rem;
-      left: 1rem;
-      right: 1rem;
+      left: 0;
+      right: 0;
       margin: 0;
-      border-width: 0.1rem;
       box-sizing: border-box;
-      border-style: solid solid none solid;
     }
     .presenter-area {
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      height: calc(100vmin - 2rem);
+      height: 100vmin;
       max-height: 70vh;
     }
     .canvas-container {
@@ -81,7 +79,7 @@
     }
     #canvas-2d {
       background-color: var(--light);
-      padding: 2%;
+      padding: 1rem;
       box-sizing: border-box;
       height: 100%;
       image-rendering: pixelated;
@@ -122,9 +120,9 @@
       flex-direction: row;
       position: fixed;
       height: 3rem;
-      bottom: 1rem;
-      left: 1rem;
-      right: 1rem;
+      bottom: 0;
+      left: 0;
+      right: 0;
       margin: 0;
     }
     .tab {
@@ -137,7 +135,7 @@
     .tab[active="true"] {
       color: var(--dark);
       background-color: var(--light);
-      border-style: none solid solid solid;
+      border-style: none solid none solid;
     }
     .tab[active="false"] {
       color: var(--light);
@@ -145,10 +143,10 @@
       border-style: solid none none none;
     }
     .tab[first="true"] {
-      border-radius: 0 0 0 1.75rem;
+      border-left-style: none;
     }
     .tab[last="true"] {
-      border-radius: 0 0 1.75rem 0;
+      border-right-style: none;
     }
   </style>
 </head>
