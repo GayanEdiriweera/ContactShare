@@ -1,195 +1,151 @@
 <!DOCTYPE html>
 <head>
+  <script src="js/qrcodegen-v1.8.0-es6.js"></script>
+  <script type="module">
+    initialize();
+
+    function initialize() {
+      const phoneNumber = localStorage.getItem("phoneNumber");
+      phoneNumberInput.value = phoneNumber;
+      phoneNumberInput.oninput = (event) => {
+        const newPhoneNumber = event.target.value;
+        localStorage.setItem("phoneNumber", newPhoneNumber);
+        refreshCanvas(newPhoneNumber);
+      };
+      refreshCanvas(phoneNumber);
+    }
+
+    function refreshCanvas(phoneNumber) {
+      const code = qrcodegen.QrCode.encodeText(
+        `sms:${phoneNumber}&body=` + encodeURIComponent("Hi this is "),
+        qrcodegen.QrCode.Ecc.MEDIUM
+      );
+
+      const rootStyle = getComputedStyle(document.querySelector(":root"));
+      const dark = rootStyle.getPropertyValue("--dark");
+      const light = rootStyle.getPropertyValue("--light");
+      const context = qrCodeCanvas.getContext("2d");
+      drawCodeToCanvas(qrCodeCanvas, context, code, dark, light);
+    }
+
+    function drawCodeToCanvas(canvas, context, code, dark, light) {
+      canvas.width = code.size + 4;
+      canvas.height = code.size + 4;
+
+      for (let y = 0; y < canvas.height; y++) {
+        for (let x = 0; x < canvas.width; x++) {
+          if (
+            x == 0 ||
+            y == 0 ||
+            x == canvas.width - 1 ||
+            y == canvas.height - 1
+          ) {
+            // outer outline
+            context.fillStyle = dark;
+          } else if (
+            x == 1 ||
+            y == 1 ||
+            x == canvas.width - 2 ||
+            y == canvas.height - 2
+          ) {
+            // inner outline
+            context.fillStyle = light;
+          } else {
+            // code
+            context.fillStyle = code.modules[y - 2][x - 2] ? dark : light;
+          }
+          context.fillRect(x, y, 1, 1);
+        }
+      }
+    }
+  </script>
+  <title>Hand Pass</title>
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
   />
-  <script src="js/qrcodegen-v1.8.0-es6.js"></script>
-  <script type="module" src="js/main.js"></script>
-  <title>pass.contact</title>
   <link rel="icon" href="/icon.png" type="image/png" />
   <link rel="apple-touch-icon" href="/icon.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
 
   <!-- Disable ios zoom on input focus -->
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1"
-  />
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
   <!-- Progressive web app support -->
   <link rel="manifest" href="manifest.json" />
-  <script>
-    if (!navigator.serviceWorker.controller) {
-      navigator.serviceWorker
-        .register("service_worker.js")
-        .then((registration) => {
-          console.log(
-            `Service worker registered for scope ${registration.scope}`
-          );
-        });
-    }
-  </script>
 
   <style>
     :root {
       --dark: black;
       --light: white;
-      --fade: hsl(0deg 0% 80%);
     }
     * {
       white-space: nowrap;
       font-size: large;
       color: var(--dark);
+      background-color: var(--light);
       font-family: sans-serif;
     }
     html,
     body {
+      height: 100%;
+      width: 100%;
+      padding: 0;
       margin: 0;
-      height: 0;
-      width: 0;
-      display: block;
       background-color: var(--light);
-      touch-action: none;
-      overflow: hidden;
     }
-    .scroll-area {
-      overflow-y: scroll;
-      position: fixed;
-      top: 0;
-      bottom: 3.5rem;
-      left: 0;
-      right: 0;
-      margin: 0;
-      box-sizing: border-box;
-    }
-    .presenter-area {
+    body {
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
-      height: 100vmin;
-      max-height: 70vh;
+      justify-content: center;
+      gap: 0.5rem;
     }
-    .canvas-container {
-      min-height: 50%;
-      aspect-ratio: 1;
-
+    #qrCodeCanvas,
+    #phoneNumberInput {
       margin-left: auto;
       margin-right: auto;
-      overflow: visible;
-    }
-    #canvas-2d {
-      background-color: var(--light);
-      padding: 1rem;
+      display: block;
       box-sizing: border-box;
-      height: 100%;
+      width: calc(min(100vw - 2rem, 100vh - 7rem));
+    }
+    #qrCodeCanvas {
+      aspect-ratio: 1;
+      object-fit: cover;
+      overflow: hidden;
       image-rendering: pixelated;
     }
-    .editor-area {
-      background-color: var(--light);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+    #phoneNumberInput {
+      padding: 1rem;
+      text-align: center;
+      border: 0.125rem solid;
+      border-radius: 0;
+    }
+    #links {
+      list-style: none;
+      padding: 0;
       margin: 1rem;
     }
-    .editor-contact {
-      display: flex;
-      flex-direction: column;
-    }
-    .editor-note {
-      display: flex;
-      flex-direction: column;
-    }
-    .row {
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
-    }
-    input,
-    textarea {
-      background-color: var(--light);
-      box-sizing: border-box;
-      width: 100%;
-      height: 3rem;
-      border: 0.1rem solid;
-      padding: 0.3rem;
-    }
-    textarea {
-      height: 32rem;
-    }
-    .tabs-area {
-      display: flex;
-      flex-direction: row;
-      position: fixed;
-      height: 3.5rem;
+    #aboutSection {
+      position: absolute;
       bottom: 0;
       left: 0;
-      right: 0;
+      padding: 0;
       margin: 0;
-    }
-    .tab {
-      text-align: center;
-      padding: 1rem;
-      flex-grow: 1;
-      border-color: var(--dark);
-      border-width: 0.1rem;
-    }
-    .tab[active="true"] {
-      color: var(--dark);
-      background-color: var(--light);
-      border-style: none solid none solid;
-    }
-    .tab[active="false"] {
-      color: var(--light);
-      background-color: var(--fade);
-      border-style: solid none none none;
-    }
-    .tab[first="true"] {
-      border-left-style: none;
-    }
-    .tab[last="true"] {
-      border-right-style: none;
+      background-color: transparent;
     }
   </style>
 </head>
 <body>
-  <div class="scroll-area" id="scroll-area">
-    <div class="presenter-area" id="presenter">
-      <div class="canvas-container" id="canvas-container">
-        <canvas id="canvas-2d"></canvas>
-      </div>
-    </div>
-    <div class="editor-area">
-      <div class="editor-note" editor="note">
-        <textarea id="text" rows="4" cols="50"></textarea>
-      </div>
-
-      <div class="editor-contact" editor="contact">
-        <div class="row"><i class="fa-solid fa-circle-info"></i> Name</div>
-        <div class="row">
-          <input placeholder="First Name" id="firstname" />
-        </div>
-        <div class="row">
-          <input placeholder="Last Name" id="lastname" />
-        </div>
-        <div class="row"><i class="fa-solid fa-phone"></i> Phone</div>
-        <div class="row">
-          <input placeholder="Phone" id="phone" />
-        </div>
-        <div class="row"><i class="fa-solid fa-envelope"></i> Email</div>
-        <div class="row">
-          <input placeholder="Email" id="email" />
-        </div>
-        <div class="row"><i class="fa-solid fa-link"></i> Links</div>
-        <div class="row">
-          <input placeholder="URL" id="url" />
-        </div>
-        <div class="row">
-          <input placeholder="URL" id="url2" />
-        </div>
-        <div class="row">
-          <input placeholder="URL" id="url3" />
-        </div>
-      </div>
-    </div>
+  <canvas id="qrCodeCanvas"></canvas>
+  <input id="phoneNumberInput" type="tel" placeholder="My number" />
+  <div id="aboutSection">
+    <ul id="links">
+      <!-- li><i class="fa-brands fa-apple"></i> iOS App</li>
+      <li><i class="fa-brands fa-android"></i> Android App</li-->
+      <li>
+        <a href="https://github.com/GayanEdiriweera/handpass"
+          ><i class="fa-solid fa-circle-question"></i> About</a
+        >
+      </li>
+    </ul>
   </div>
-  <div class="tabs-area" id="tabs"></div>
 </body>

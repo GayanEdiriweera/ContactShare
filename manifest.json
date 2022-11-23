@@ -1,12 +1,12 @@
 {
-  "name": "pass.contact",
-  "short_name": "pass.contact",
+  "name": "Hand Pass",
+  "short_name": "Hand Pass",
   "theme_color": "#000000",
   "background_color": "#ffffff",
   "display": "standalone",
   "scope": "/",
-  "start_url": "https://pass.contact/",
-  "description": "A simple way to generate QR codes from your contact information and pass the information directly from your device to someone else's device",
+  "start_url": "https://handpass.app/",
+  "description": "A simple way to swap phone numbers in person",
   "orientation": "any",
   "icons": [
     {
