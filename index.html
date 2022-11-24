@@ -1,64 +1,6 @@
 <!DOCTYPE html>
 <head>
   <script src="js/qrcodegen-v1.8.0-es6.js"></script>
-  <script type="module">
-    initialize();
-
-    function initialize() {
-      const phoneNumber = localStorage.getItem("phoneNumber");
-      phoneNumberInput.value = phoneNumber;
-      phoneNumberInput.oninput = (event) => {
-        const newPhoneNumber = event.target.value;
-        localStorage.setItem("phoneNumber", newPhoneNumber);
-        refreshCanvas(newPhoneNumber);
-      };
-      refreshCanvas(phoneNumber);
-    }
-
-    function refreshCanvas(phoneNumber) {
-      const code = qrcodegen.QrCode.encodeText(
-        `sms:${phoneNumber}&body=` + encodeURIComponent("Hi this is "),
-        qrcodegen.QrCode.Ecc.MEDIUM
-      );
-
-      const rootStyle = getComputedStyle(document.querySelector(":root"));
-      const dark = rootStyle.getPropertyValue("--dark");
-      const light = rootStyle.getPropertyValue("--light");
-      const context = qrCodeCanvas.getContext("2d");
-      drawCodeToCanvas(qrCodeCanvas, context, code, dark, light);
-    }
-
-    function drawCodeToCanvas(canvas, context, code, dark, light) {
-      canvas.width = code.size + 4;
-      canvas.height = code.size + 4;
-
-      for (let y = 0; y < canvas.height; y++) {
-        for (let x = 0; x < canvas.width; x++) {
-          if (
-            x == 0 ||
-            y == 0 ||
-            x == canvas.width - 1 ||
-            y == canvas.height - 1
-          ) {
-            // outer outline
-            context.fillStyle = dark;
-          } else if (
-            x == 1 ||
-            y == 1 ||
-            x == canvas.width - 2 ||
-            y == canvas.height - 2
-          ) {
-            // inner outline
-            context.fillStyle = light;
-          } else {
-            // code
-            context.fillStyle = code.modules[y - 2][x - 2] ? dark : light;
-          }
-          context.fillRect(x, y, 1, 1);
-        }
-      }
-    }
-  </script>
   <title>Hand Pass</title>
   <link
     rel="stylesheet"
@@ -148,4 +90,63 @@
       </li>
     </ul>
   </div>
+  <script>
+    initialize();
+    function initialize() {
+      const phoneNumber = localStorage.getItem("phoneNumber") ?? "";
+      phoneNumberInput.value = phoneNumber;
+      phoneNumberInput.oninput = (event) => {
+        const newPhoneNumber = event.target.value;
+        localStorage.setItem("phoneNumber", newPhoneNumber);
+        refreshCanvas(newPhoneNumber);
+      };
+      refreshCanvas(phoneNumber);
+    }
+
+    function refreshCanvas(phoneNumber) {
+      const code = phoneNumber
+        ? qrcodegen.QrCode.encodeText(
+            `sms:${phoneNumber}&body=` + encodeURIComponent("Hi this is "),
+            qrcodegen.QrCode.Ecc.MEDIUM
+          )
+        : { size: 0 };
+
+      const rootStyle = getComputedStyle(document.querySelector(":root"));
+      const dark = rootStyle.getPropertyValue("--dark");
+      const light = rootStyle.getPropertyValue("--light");
+      const context = qrCodeCanvas.getContext("2d");
+      drawCodeToCanvas(qrCodeCanvas, context, code, dark, light);
+    }
+
+    function drawCodeToCanvas(canvas, context, code, dark, light) {
+      canvas.width = code.size + 4;
+      canvas.height = code.size + 4;
+
+      for (let y = 0; y < canvas.height; y++) {
+        for (let x = 0; x < canvas.width; x++) {
+          if (
+            x == 0 ||
+            y == 0 ||
+            x == canvas.width - 1 ||
+            y == canvas.height - 1
+          ) {
+            // outer outline
+            context.fillStyle = dark;
+          } else if (
+            x == 1 ||
+            y == 1 ||
+            x == canvas.width - 2 ||
+            y == canvas.height - 2
+          ) {
+            // inner outline
+            context.fillStyle = light;
+          } else {
+            // code
+            context.fillStyle = code.modules[y - 2][x - 2] ? dark : light;
+          }
+          context.fillRect(x, y, 1, 1);
+        }
+      }
+    }
+  </script>
 </body>
