@@ -120,12 +120,10 @@
 
     function drawCodeToCanvas(canvas, context, code, dark, light) {
       if (code.size == 0) {
-        canvas.height = 1;
-        canvas.width = 1;
-        context.fillStyle = light;
-        context.fillRect(0, 0, 1, 1);
+        canvas.style.display = "none";
         return;
       }
+      canvas.style.display = "block";
       canvas.width = code.size + 4;
       canvas.height = code.size + 4;
 
