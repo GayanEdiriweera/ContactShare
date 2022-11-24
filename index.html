@@ -106,7 +106,7 @@
     function refreshCanvas(phoneNumber) {
       const code = phoneNumber
         ? qrcodegen.QrCode.encodeText(
-            `sms:${phoneNumber}&body=` + encodeURIComponent("Hi this is "),
+            encodeURI(`sms:${phoneNumber}`),
             qrcodegen.QrCode.Ecc.MEDIUM
           )
         : { size: 0 };
