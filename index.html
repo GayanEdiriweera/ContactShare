@@ -51,6 +51,9 @@
       overflow: hidden;
       image-rendering: pixelated;
     }
+    #instructions {
+      text-align: center;
+    }
     #phoneNumberInput {
       padding: 1rem;
       text-align: center;
@@ -74,7 +77,8 @@
 </head>
 <body>
   <canvas id="qrCodeCanvas"></canvas>
-  <input id="phoneNumberInput" type="tel" placeholder="My number" />
+  <div id="instructions">Enter number to make QR code</div>
+  <input id="phoneNumberInput" type="tel" placeholder="My Number" />
   <div id="aboutSection">
     <ul id="links">
       <!-- li>iOS App (soon)</li>
@@ -114,9 +118,11 @@
 
     function drawCodeToCanvas(canvas, context, code, dark, light) {
       if (code.size == 0) {
+        instructions.style.display = "block";
         canvas.style.display = "none";
         return;
       }
+      instructions.style.display = "none";
       canvas.style.display = "block";
       canvas.width = code.size + 4;
       canvas.height = code.size + 4;
