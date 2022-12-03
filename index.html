@@ -2,8 +2,8 @@
 <head>
   <script src="js/qrcodegen-v1.8.0-es6.js"></script>
   <title>Hand Pass</title>
-  <link rel="icon" href="icon-180x180.png" type="image/png" />
-  <link rel="apple-touch-icon" href="icon-180x180.png" />
+  <link rel="icon" href="assets/icons/icon-180x180.png" type="image/png" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-180x180.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
 
   <!-- Disable ios zoom on input focus -->
@@ -113,18 +113,21 @@
       width: 3rem;
     }
   </style>
+  <script>
+    navigator.serviceWorker.register("service-worker.js");
+  </script>
 </head>
 <body>
   <canvas id="qrCodeCanvas"></canvas>
   <div id="instructions">Enter number to make QR code</div>
   <input id="phoneNumberInput" type="tel" placeholder="My Number" />
   <div id="menuButton" class="button">
-    <img class="icon" src="menu.png" />
+    <img class="icon" src="assets/icons/menu.png" />
   </div>
   <div id="modalParent">
     <div id="menu">
       <div id="closeButton" class="button">
-        <img class="icon" src="close.png" />
+        <img class="icon" src="assets/icons/close.png" />
       </div>
       <a class="functionLink" selected id="textBack">Text Back</a>
       <a class="functionLink" disabled>Contact Card (soon)</a>
