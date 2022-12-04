@@ -1,0 +1,6 @@
+[{
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target" : { "namespace": "android_app", "package_name": "dev.osui.handpass",
+                     "sha256_cert_fingerprints": ["95:B6:53:DD:E6:60:00:A7:72:B8:C5:72:FD:0E:7E:A9:7F:1A:A0:51:4E:43:9D:4B:3D:AA:F5:47:4D:28:39:27"] }
+      }
+]
