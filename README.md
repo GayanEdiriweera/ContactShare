@@ -8,7 +8,7 @@ Hand Pass is designed to be used from your phone’s Home Screen for quick acces
 
 ## Functions
 
-Hand Pass is a single app with a set of functions that represent different use cases. The initial release has only one simple function called Text Back. Text Back lets you make a QR Code from your phone number. A person who scans the code is instantly prompted to send a text message back to you. This makes Text Back a fast, reliable way to swap phone numbers in person. No need to say your number out loud. No need to give your device to another person. Connect in a couple of taps.
+Hand Pass is designed to have an expanding set of functions that perform different use cases. The initial release has only one simple function called Text Back. Text Back lets you make a QR Code from your phone number. A person who scans the code is instantly prompted to send a text message back to you. This makes Text Back a fast, reliable way to swap phone numbers in person. No need to say your number out loud. No need to give your device to another person. Connect in a couple of taps.
 
 I plan to release more functions via updates to the Hand Pass app. I hope to produce designs that are as accessible and useful as possible.
 
