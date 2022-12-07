@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<head>
+  <title>Hand Pass</title>
+  <link rel="icon" href="assets/icons/icon-180x180.png" type="image/png" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-180x180.png" />
+
+  <!-- Disable ios zoom on input focus -->
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
+
+  <style>
+    :root {
+      --dark: black;
+      --light: white;
+    }
+    * {
+      white-space: nowrap;
+      font-size: large;
+      color: var(--dark);
+      background-color: var(--light);
+      font-family: sans-serif;
+    }
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      background-color: var(--light);
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    #icon {
+      display: inline;
+      height: 5rem;
+      padding: 0.5rem;
+    }
+    h1 {
+      font-size: xx-large;
+    }
+    #header {
+      display: flex;
+      flex-direction: row;
+      justify-content: start;
+      align-items: center;
+    }
+    #storeLinks {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .storeLink {
+      width: 10rem;
+      padding: 0.25rem;
+    }
+    #socials {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+    }
+    .socialLink {
+      width: 3rem;
+      padding: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <img id="icon" src="assets/icons/icon-180x180.png" />
+    <h1>Hand Pass</h1>
+  </div>
+  <div id="storeLinks">
+    <img class="storeLink" src="assets/images/AppStore.png" />
+    <img class="storeLink" src="assets/images/PlayStore.png" />
+  </div>
+  <div id="socials">
+    <img class="socialLink" src="assets/images/Twitter.png" />
+    <img class="socialLink" src="assets/images/Reddit.png" />
+    <img class="socialLink" src="assets/images/Email.png" />
+  </div>
+</body>
