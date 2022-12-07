@@ -5,7 +5,7 @@
   "background_color": "#ffffff",
   "display": "standalone",
   "scope": "/",
-  "start_url": "https://handpass.app/",
+  "start_url": "./app.html",
   "description": "A simple way to make and present QR codes for other people to scan",
   "orientation": "any",
   "icons": [
