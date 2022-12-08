@@ -4,8 +4,8 @@
   "theme_color": "#000000",
   "background_color": "#ffffff",
   "display": "standalone",
-  "scope": "/",
-  "start_url": "./app.html",
+  "scope": ".",
+  "start_url": "./",
   "description": "A simple way to make and present QR codes for other people to scan",
   "orientation": "any",
   "icons": [
