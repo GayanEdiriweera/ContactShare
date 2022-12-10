@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <head>
   <script src="js/qrcodegen-v1.8.0-es6.js"></script>
+  <script src="js/vcard.js"></script>
   <title>Hand Pass</title>
   <link rel="icon" href="assets/icons/icon-180x180.png" type="image/png" />
   <link rel="apple-touch-icon" href="assets/icons/icon-180x180.png" />
@@ -25,92 +26,64 @@
     }
     html,
     body {
-      height: 100%;
       width: 100%;
       padding: 0;
       margin: 0;
       background-color: var(--light);
     }
-    body {
+    .function {
       display: flex;
       flex-direction: column;
       justify-content: center;
       gap: 0.5rem;
     }
-    #qrCodeCanvas,
-    #phoneNumberInput {
+    canvas,
+    input {
       margin-left: auto;
       margin-right: auto;
       display: block;
       box-sizing: border-box;
       width: calc(min(100vw - 2rem, 100vh - 7rem));
     }
-    #qrCodeCanvas {
+    canvas {
       aspect-ratio: 1;
       object-fit: cover;
       overflow: hidden;
       image-rendering: pixelated;
+      margin: auto;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
     }
-    #instructions {
+    .instructions {
       text-align: center;
     }
-    #phoneNumberInput {
-      padding: 1rem;
+    input {
+      padding-left: 1rem;
+      padding-right: 1rem;
       text-align: center;
       border: 0.125rem solid;
       border-radius: 0;
+      height: 3rem;
     }
     #links {
       list-style: none;
       padding: 0;
       margin: 1rem;
     }
-    #menuButton {
-      position: absolute;
-      top: 0;
-      left: 0;
-      padding: 0;
-      margin: 1rem;
+    #functionSelector {
+      display: block;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      width: 14rem;
+      height: 3rem;
+      margin: auto;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
       border: 0.125rem solid black;
       background-color: white;
     }
-    .button {
-      width: 3rem;
-      height: 3rem;
-    }
-    #menu {
-      width: 15rem;
-      height: 100vh;
-      border-right: 0.125rem solid black;
-    }
-    .functionLink[selected] {
-      border-right: 0.5rem solid black;
-    }
-
-    #menu a {
-      background-color: #eee; /* Grey background color */
-      color: black; /* Black text color */
-      display: block; /* Make the links appear below each other */
-      padding: 0.75rem; /* Add some padding */
-      text-decoration: none; /* Remove underline from links */
-    }
-    #menu a[disabled] {
-      color: #bbb;
-    }
-
-    #modalParent {
-      display: none; /* Hidden by default */
-      position: absolute; /* Stay in place */
-      left: 0;
-      top: 0;
-      z-index: 1;
-      width: 100%; /* Full width */
-      height: 100%; /* Full height */
-      background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
-    }
-
-    .icon {
-      width: 3rem;
+    #functions {
+      margin: 1rem;
     }
   </style>
   <script>
@@ -118,80 +91,207 @@
   </script>
 </head>
 <body>
+  <select
+    id="functionSelector"
+    value="giveNumber"
+    onchange="setFunction(this.value)"
+  >
+    <option value="giveNumber">Give Phone Number</option>
+    <option value="giveEmail">Give Email Address</option>
+    <option value="giveHandPass">Give Hand Pass App</option>
+  </select>
   <canvas id="qrCodeCanvas"></canvas>
-  <div id="instructions">Enter number to make QR code</div>
-  <input id="phoneNumberInput" type="tel" placeholder="My Number" />
-  <div id="menuButton" class="button">
-    <img class="icon" src="assets/icons/menu.png" />
-  </div>
-  <div id="modalParent">
-    <div id="menu">
-      <div id="closeButton" class="button">
-        <img class="icon" src="assets/icons/close.png" />
-      </div>
-      <a class="functionLink" selected id="textBack">Text Back</a>
-      <a class="functionLink" disabled>Contact Card (soon)</a>
-      <br />
-      <a href="https://github.com/GayanEdiriweera/handpass">About</a>
+  <div id="functions">
+    <div id="giveNumber" class="function">
+      <div class="instructions">Enter information to make QR code</div>
+      <input name="firstName" placeholder="My First Name" />
+      <input name="lastName" placeholder="My Last Name" />
+      <input name="phoneNumber" type="tel" placeholder="My Phone Number" />
+    </div>
+    <div id="giveEmail" class="function">
+      <div class="instructions">Enter information to make QR code</div>
+      <input name="firstName" placeholder="My First Name" />
+      <input name="lastName" placeholder="My Last Name" />
+      <input name="emailAddress" type="email" placeholder="My Email Address" />
+    </div>
+    <div id="giveHandPass" class="function">
+      <div class="instructions">Use QR Code to share Hand Pass</div>
     </div>
   </div>
   <script>
-    menuButton.onclick = function () {
-      modalParent.style.display = "block";
-    };
-    closeButton.onclick = function () {
-      modalParent.style.display = "none";
-    };
-
-    if ("ontouchstart" in document) {
-      document.ontouchstart = function (event) {
-        if (event.target == modalParent) {
-          modalParent.style.display = "none";
-        }
+    function setupGiveNumber() {
+      const firstName = localStorage.getItem("firstName") ?? "";
+      const firstNameInput = document.querySelector(
+        "#giveNumber [name=firstName]"
+      );
+      firstNameInput.value = firstName;
+      firstNameInput.oninput = (event) => {
+        const newFirstName = event.target.value;
+        localStorage.setItem("firstName", newFirstName);
+        refreshCanvas(
+          vcard.buildPhoneCard(
+            localStorage.getItem("firstName") ?? "",
+            localStorage.getItem("lastName") ?? "",
+            localStorage.getItem("phoneNumber") ?? ""
+          )
+        );
       };
-    } else {
-      document.onclick = function (event) {
-        if (event.target == modalParent) {
-          modalParent.style.display = "none";
-        }
-      };
-    }
 
-    initialize();
-    function initialize() {
+      const lastName = localStorage.getItem("lastName") ?? "";
+      const lastNameInput = document.querySelector(
+        "#giveNumber [name=lastName]"
+      );
+      lastNameInput.value = lastName;
+      lastNameInput.oninput = (event) => {
+        const newLastName = event.target.value;
+        localStorage.setItem("lastName", newLastName);
+
+        refreshCanvas(
+          vcard.buildPhoneCard(
+            localStorage.getItem("firstName") ?? "",
+            localStorage.getItem("lastName") ?? "",
+            localStorage.getItem("phoneNumber") ?? ""
+          )
+        );
+      };
+
       const phoneNumber = localStorage.getItem("phoneNumber") ?? "";
+      const phoneNumberInput = document.querySelector(
+        "#giveNumber [name=phoneNumber]"
+      );
       phoneNumberInput.value = phoneNumber;
       phoneNumberInput.oninput = (event) => {
         const newPhoneNumber = event.target.value;
         localStorage.setItem("phoneNumber", newPhoneNumber);
-        refreshCanvas(newPhoneNumber);
+
+        refreshCanvas(
+          vcard.buildPhoneCard(
+            localStorage.getItem("firstName") ?? "",
+            localStorage.getItem("lastName") ?? "",
+            localStorage.getItem("phoneNumber") ?? ""
+          )
+        );
       };
-      refreshCanvas(phoneNumber);
+
+      refreshCanvas(
+        vcard.buildPhoneCard(
+          localStorage.getItem("firstName") ?? "",
+          localStorage.getItem("lastName") ?? "",
+          localStorage.getItem("phoneNumber") ?? ""
+        )
+      );
     }
 
-    function refreshCanvas(phoneNumber) {
-      const code = phoneNumber
-        ? qrcodegen.QrCode.encodeText(
-            encodeURI(`sms:${phoneNumber}`),
-            qrcodegen.QrCode.Ecc.MEDIUM
+    function setupGiveEmail() {
+      const firstName = localStorage.getItem("firstName") ?? "";
+      const firstNameInput = document.querySelector(
+        "#giveEmail [name=firstName]"
+      );
+      firstNameInput.value = firstName;
+      firstNameInput.oninput = (event) => {
+        const newFirstName = event.target.value;
+        localStorage.setItem("firstName", newFirstName);
+        refreshCanvas(
+          vcard.buildEmailCard(
+            localStorage.getItem("firstName") ?? "",
+            localStorage.getItem("lastName") ?? "",
+            localStorage.getItem("emailAddress") ?? ""
           )
-        : { size: 0 };
+        );
+      };
 
-      const rootStyle = getComputedStyle(document.querySelector(":root"));
-      const dark = rootStyle.getPropertyValue("--dark");
-      const light = rootStyle.getPropertyValue("--light");
-      const context = qrCodeCanvas.getContext("2d");
-      drawCodeToCanvas(qrCodeCanvas, context, code, dark, light);
+      const lastName = localStorage.getItem("lastName") ?? "";
+      const lastNameInput = document.querySelector(
+        "#giveEmail [name=lastName]"
+      );
+      lastNameInput.value = lastName;
+      lastNameInput.oninput = (event) => {
+        const newLastName = event.target.value;
+        localStorage.setItem("lastName", newLastName);
+
+        refreshCanvas(
+          vcard.buildEmailCard(
+            localStorage.getItem("firstName") ?? "",
+            localStorage.getItem("lastName") ?? "",
+            localStorage.getItem("emailAddress") ?? ""
+          )
+        );
+      };
+
+      const emailAddress = localStorage.getItem("emailAddress") ?? "";
+      const emailAddressInput = document.querySelector(
+        "#giveEmail [name=emailAddress]"
+      );
+      emailAddressInput.value = emailAddress;
+      emailAddressInput.oninput = (event) => {
+        const newEmailAddress = event.target.value;
+        localStorage.setItem("emailAddress", newEmailAddress);
+
+        refreshCanvas(
+          vcard.buildEmailCard(
+            localStorage.getItem("firstName") ?? "",
+            localStorage.getItem("lastName") ?? "",
+            localStorage.getItem("emailAddress") ?? ""
+          )
+        );
+      };
+
+      refreshCanvas(
+        vcard.buildEmailCard(
+          localStorage.getItem("firstName") ?? "",
+          localStorage.getItem("lastName") ?? "",
+          localStorage.getItem("emailAddress") ?? ""
+        )
+      );
+    }
+
+    function setFunction(functionName) {
+      localStorage.setItem("selectedFunction", functionName);
+      var functions = document.querySelectorAll(".function");
+      for (i = 0; i < functions.length; ++i) {
+        var element = functions[i];
+        element.style.display = element.id == functionName ? "flex" : "none";
+      }
+
+      switch (functionName) {
+        case "giveNumber":
+          setupGiveNumber();
+          break;
+        case "giveEmail":
+          setupGiveEmail();
+          break;
+        case "giveHandPass":
+          refreshCanvas("https://handpass.app/main.html");
+          break;
+      }
+    }
+
+    initialize();
+    function initialize() {
+      let selectedFunction =
+        localStorage.getItem("selectedFunction") ?? "giveNumber";
+      functionSelector.value = selectedFunction;
+      setFunction(selectedFunction);
+    }
+
+    function refreshCanvas(text) {
+      const code = text
+        ? qrcodegen.QrCode.encodeText(text, qrcodegen.QrCode.Ecc.MEDIUM)
+        : { size: 0 };
+      if (code.size == 0) {
+        qrCodeCanvas.style.display = "none";
+      } else {
+        qrCodeCanvas.style.display = "block";
+
+        const rootStyle = getComputedStyle(document.querySelector(":root"));
+        const dark = rootStyle.getPropertyValue("--dark");
+        const light = rootStyle.getPropertyValue("--light");
+        const context = qrCodeCanvas.getContext("2d");
+        drawCodeToCanvas(qrCodeCanvas, context, code, dark, light);
+      }
     }
 
     function drawCodeToCanvas(canvas, context, code, dark, light) {
-      if (code.size == 0) {
-        instructions.style.display = "block";
-        canvas.style.display = "none";
-        return;
-      }
-      instructions.style.display = "none";
-      canvas.style.display = "block";
       canvas.width = code.size + 4;
       canvas.height = code.size + 4;
 
