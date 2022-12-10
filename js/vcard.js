@@ -1,5 +1,8 @@
 class vcard {
   static buildPhoneCard(firstname, lastname, phone) {
+    if (!firstname && !lastname && !phone) {
+      return "";
+    }
     return `\
 BEGIN:VCARD
 VERSION:4.0
@@ -9,6 +12,9 @@ END:VCARD`;
   }
 
   static buildEmailCard(firstname, lastname, email) {
+    if (!firstname && !lastname && !email) {
+      return "";
+    }
     return `\
 BEGIN:VCARD
 VERSION:4.0
