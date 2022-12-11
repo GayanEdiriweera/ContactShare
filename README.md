@@ -12,9 +12,7 @@ The initial release of Hand Pass has three functions, "Give Phone Number", "Give
 
 ## Attribution
 
-Hand Pass uses the excellent QR Code generator library from Project Nayuki. The live demo in particular is incredibly useful for building an intuition for how QR Codes work.
-
-https://www.nayuki.io/page/qr-code-generator-library
+Hand Pass uses the excellent [QR Code generator library](https://www.nayuki.io/page/qr-code-generator-library) from [@nayuki](https://github.com/nayuki). The live demo in particular is incredibly useful for building an intuition for how QR Codes work.
 
 QR Code is registered trademark of DENSO WAVE INCORPORATED.
 
