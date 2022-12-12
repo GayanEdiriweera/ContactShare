@@ -98,6 +98,7 @@
   >
     <option value="giveNumber">Give Phone Number</option>
     <option value="giveEmail">Give Email Address</option>
+    <option value="giveWebAddress">Give Web Address</option>
     <option value="giveHandPass">Give Hand Pass App</option>
   </select>
   <canvas id="qrCodeCanvas"></canvas>
@@ -113,6 +114,10 @@
       <input name="firstName" placeholder="My First Name" />
       <input name="lastName" placeholder="My Last Name" />
       <input name="emailAddress" type="email" placeholder="My Email Address" />
+    </div>
+    <div id="giveWebAddress" class="function">
+      <div class="instructions">Enter information to make QR Code</div>
+      <input name="webAddress" type="url" placeholder="Web Address" />
     </div>
     <div id="giveHandPass" class="function">
       <div class="instructions">Use QR Code to share Hand Pass</div>
@@ -145,7 +150,6 @@
       lastNameInput.oninput = (event) => {
         const newLastName = event.target.value;
         localStorage.setItem("lastName", newLastName);
-
         refreshCanvas(
           vcard.buildPhoneCard(
             localStorage.getItem("firstName") ?? "",
@@ -163,7 +167,6 @@
       phoneNumberInput.oninput = (event) => {
         const newPhoneNumber = event.target.value;
         localStorage.setItem("phoneNumber", newPhoneNumber);
-
         refreshCanvas(
           vcard.buildPhoneCard(
             localStorage.getItem("firstName") ?? "",
@@ -208,7 +211,6 @@
       lastNameInput.oninput = (event) => {
         const newLastName = event.target.value;
         localStorage.setItem("lastName", newLastName);
-
         refreshCanvas(
           vcard.buildEmailCard(
             localStorage.getItem("firstName") ?? "",
@@ -226,7 +228,6 @@
       emailAddressInput.oninput = (event) => {
         const newEmailAddress = event.target.value;
         localStorage.setItem("emailAddress", newEmailAddress);
-
         refreshCanvas(
           vcard.buildEmailCard(
             localStorage.getItem("firstName") ?? "",
@@ -245,6 +246,25 @@
       );
     }
 
+    function setupGiveWebAddress() {
+      const webAddress = localStorage.getItem("webAddress") ?? "";
+      const webAddressInput = document.querySelector(
+        "#giveWebAddress [name=webAddress]"
+      );
+      webAddressInput.value = webAddress;
+      webAddressInput.oninput = (event) => {
+        const newWebAddress = event.target.value;
+        localStorage.setItem("webAddress", newWebAddress);
+        refreshCanvas(localStorage.getItem("webAddress") ?? "");
+      };
+      refreshCanvas(localStorage.getItem("webAddress") ?? "");
+    }
+
+    function setupGiveHandPass() {
+      const handPassAddress = "https://handpass.app";
+      refreshCanvas(handPassAddress);
+    }
+
     function setFunction(functionName) {
       localStorage.setItem("selectedFunction", functionName);
       var functions = document.querySelectorAll(".function");
@@ -260,8 +280,11 @@
         case "giveEmail":
           setupGiveEmail();
           break;
+        case "giveWebAddress":
+          setupGiveWebAddress();
+          break;
         case "giveHandPass":
-          refreshCanvas("https://handpass.app");
+          setupGiveHandPass();
           break;
       }
     }
