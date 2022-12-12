@@ -98,7 +98,7 @@
   >
     <option value="giveNumber">Give Phone Number</option>
     <option value="giveEmail">Give Email Address</option>
-    <option value="giveWebAddress">Give Web Address</option>
+    <option value="giveWebLink">Give Web Link</option>
     <option value="giveHandPass">Give Hand Pass App</option>
   </select>
   <canvas id="qrCodeCanvas"></canvas>
@@ -115,9 +115,9 @@
       <input name="lastName" placeholder="My Last Name" />
       <input name="emailAddress" type="email" placeholder="My Email Address" />
     </div>
-    <div id="giveWebAddress" class="function">
+    <div id="giveWebLink" class="function">
       <div class="instructions">Enter information to make QR Code</div>
-      <input name="webAddress" type="url" placeholder="Web Address" />
+      <input name="webLink" type="url" placeholder="Web Link" />
     </div>
     <div id="giveHandPass" class="function">
       <div class="instructions">Use QR Code to share Hand Pass</div>
@@ -246,18 +246,18 @@
       );
     }
 
-    function setupGiveWebAddress() {
-      const webAddress = localStorage.getItem("webAddress") ?? "";
-      const webAddressInput = document.querySelector(
-        "#giveWebAddress [name=webAddress]"
+    function setupGiveWebLink() {
+      const webLink = localStorage.getItem("webLink") ?? "";
+      const webLinkInput = document.querySelector(
+        "#giveWebLink [name=webLink]"
       );
-      webAddressInput.value = webAddress;
-      webAddressInput.oninput = (event) => {
-        const newWebAddress = event.target.value;
-        localStorage.setItem("webAddress", newWebAddress);
-        refreshCanvas(localStorage.getItem("webAddress") ?? "");
+      webLinkInput.value = webLink;
+      webLinkInput.oninput = (event) => {
+        const newWebLink = event.target.value;
+        localStorage.setItem("webLink", newWebLink);
+        refreshCanvas(localStorage.getItem("webLink") ?? "");
       };
-      refreshCanvas(localStorage.getItem("webAddress") ?? "");
+      refreshCanvas(localStorage.getItem("webLink") ?? "");
     }
 
     function setupGiveHandPass() {
@@ -280,8 +280,8 @@
         case "giveEmail":
           setupGiveEmail();
           break;
-        case "giveWebAddress":
-          setupGiveWebAddress();
+        case "giveWebLink":
+          setupGiveWebLink();
           break;
         case "giveHandPass":
           setupGiveHandPass();
