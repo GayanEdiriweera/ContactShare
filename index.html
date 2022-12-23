@@ -125,8 +125,11 @@
     </div>
     <div id="giveHandPass" class="function">
       <div class="instructions">
-        Pass it on. Present the QR Code or share
-        <a href="https://handpass.app">https://handpass.app</a>
+        Pass it on. Present the QR Code or share the following link
+      </div>
+      <input name="handPassLink" readonly value="https://handpass.app" />
+      <div name="copiedNotification" class="instructions">
+        Copied to clipboard
       </div>
     </div>
   </div>
@@ -268,8 +271,24 @@
     }
 
     function setupGiveHandPass() {
-      const handPassAddress = "https://handpass.app";
-      refreshCanvas(handPassAddress);
+      const copiedNotification = document.querySelector(
+        "#giveHandPass [name=copiedNotification]"
+      );
+      copiedNotification.style.display = "none";
+
+      const handPassLinkInput = document.querySelector(
+        "#giveHandPass [name=handPassLink]"
+      );
+      handPassLinkInput.onclick = (event) => {
+        handPassLinkInput.select();
+        handPassLinkInput.setSelectionRange(0, 99999); // For mobile devices
+        navigator.clipboard.writeText(handPassLinkInput.value);
+        copiedNotification.style.display = "block";
+        setTimeout(function () {
+          copiedNotification.style.display = "none";
+        }, 3000);
+      };
+      refreshCanvas(handPassLinkInput.value);
     }
 
     function setFunction(functionName) {

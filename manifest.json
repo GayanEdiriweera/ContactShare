@@ -3,7 +3,7 @@
   "short_name": "Hand Pass",
   "theme_color": "#000000",
   "background_color": "#ffffff",
-  "display": "standalone",
+  "display": "fullscreen",
   "scope": ".",
   "start_url": "./",
   "description": "A simple way to make and present QR codes for other people to scan",
