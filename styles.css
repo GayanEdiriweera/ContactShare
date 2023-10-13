@@ -17,11 +17,12 @@ body {
 }
 #detailView {
   border: 0.1rem solid var(--dark);
-  margin: 1rem;
   border-radius: 1rem;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
 }
 .view {
+  width: calc(min(100vw, 100vh) - 2rem);
+  margin: 1rem auto 1rem auto;
   background-color: var(--light);
   padding: 1.5rem;
 }
