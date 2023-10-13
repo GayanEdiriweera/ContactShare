@@ -253,7 +253,7 @@ function showDropdown(id) {
   document.getElementById(id).classList.toggle("show");
 }
 
-window.onclick = function (event) {
+document.onclick = function (event) {
   if (!event.target.matches(".dropbtn")) {
     const dropdowns = document.getElementsByClassName("dropdown-content");
     Array.from(dropdowns).forEach((dropdown) =>
