@@ -1,374 +1,61 @@
 <!DOCTYPE html>
-<head>
-  <script src="js/qrcodegen-v1.8.0-es6.js"></script>
-  <script src="js/vcard.js"></script>
-  <title>Hand Pass</title>
-  <link rel="icon" href="assets/icons/icon-180x180.png" type="image/png" />
-  <link rel="apple-touch-icon" href="assets/icons/icon-180x180.png" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-
-  <!-- Disable ios zoom on input focus -->
-  <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
-  <!-- Progressive web app support -->
-  <link rel="manifest" href="manifest.json" />
-
-  <style>
-    :root {
-      --dark: black;
-      --light: white;
-    }
-    * {
-      white-space: nowrap;
-      font-size: large;
-      color: var(--dark);
-      background-color: var(--light);
-      font-family: sans-serif;
-    }
-    html,
-    body {
-      width: 100%;
-      padding: 0;
-      margin: 0;
-      background-color: var(--light);
-    }
-    .function {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-    canvas,
-    input {
-      margin-left: auto;
-      margin-right: auto;
-      display: block;
-      box-sizing: border-box;
-      width: calc(100vw - 2rem);
-      max-width: calc(100vmin - 2rem);
-    }
-    canvas {
-      aspect-ratio: 1;
-      object-fit: cover;
-      overflow: hidden;
-      image-rendering: pixelated;
-      margin: auto;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-    }
-    .instructions {
-      text-align: center;
-      white-space: normal;
-    }
-    input {
-      padding-left: 1rem;
-      padding-right: 1rem;
-      text-align: center;
-      border: 0.125rem solid;
-      border-radius: 0;
-      height: 3rem;
-    }
-    #links {
-      list-style: none;
-      padding: 0;
-      margin: 1rem;
-    }
-    #functionSelector {
-      display: block;
-      padding-left: 1rem;
-      padding-right: 1rem;
-      width: 14rem;
-      height: 3rem;
-      margin: auto;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-      border: 0.125rem solid black;
-      background-color: white;
-    }
-    #functions {
-      margin: 1rem;
-    }
-  </style>
-  <script>
-    if (typeof navigator.serviceWorker !== "undefined") {
-      navigator.serviceWorker.register("service-worker.js");
-    }
-  </script>
-</head>
-<body>
-  <select
-    id="functionSelector"
-    value="giveNumber"
-    onchange="setFunction(this.value)"
-  >
-    <option value="giveNumber">Give Phone Number</option>
-    <option value="giveEmail">Give Email Address</option>
-    <option value="giveWebLink">Give Web Link</option>
-    <option value="giveHandPass">Give Hand Pass App</option>
-  </select>
-  <canvas id="qrCodeCanvas"></canvas>
-  <div id="functions">
-    <div id="giveNumber" class="function">
-      <div class="instructions">Enter information to make QR Code</div>
-      <input name="firstName" placeholder="First Name" />
-      <input name="lastName" placeholder="Last Name" />
-      <input name="phoneNumber" type="tel" placeholder="Phone Number" />
-    </div>
-    <div id="giveEmail" class="function">
-      <div class="instructions">Enter information to make QR Code</div>
-      <input name="firstName" placeholder="First Name" />
-      <input name="lastName" placeholder="Last Name" />
-      <input name="emailAddress" type="email" placeholder="Email Address" />
-    </div>
-    <div id="giveWebLink" class="function">
-      <div class="instructions">Enter information to make QR Code</div>
-      <input name="webLink" type="url" placeholder="Web Link" />
-    </div>
-    <div id="giveHandPass" class="function">
-      <div class="instructions">
-        Pass it on. Present the QR Code or share the following link
+<html lang="en">
+  <head>
+    <script src="js/qrcodegen-v1.8.0-es6.js"></script>
+    <script src="js/vcard.js"></script>
+    <title>Hand Pass</title>
+    <link rel="icon" href="assets/icons/icon-180x180.png" type="image/png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div class="view" id="listView">
+        <div class="header">
+          <h1>Hand Pass</h1>
+          <div class="dropdown">
+            <button
+              onclick="showDropdown('addDropdown')"
+              id="addButton"
+              class="dropbtn circle-button"
+            >
+              +
+            </button>
+            <div id="addDropdown" class="dropdown-content">
+              <button id="addContactInformation">
+                New Contact Information
+              </button>
+              <button id="addWebLink">New Web Link</button>
+            </div>
+          </div>
+        </div>
+        <div id="list-area"></div>
       </div>
-      <input name="handPassLink" readonly value="https://handpass.app" />
-      <div name="copiedNotification" class="instructions">
-        Copied to clipboard
+      <div class="view" id="detailView">
+        <div class="header">
+          <button id="doneButton">Done</button>
+          <div class="dropdown">
+            <button
+              onclick="showDropdown('optionsDropdown')"
+              id="optionsButton"
+              class="dropbtn circle-button"
+            >
+              ...
+            </button>
+            <div id="optionsDropdown" class="dropdown-content">
+              <button id="removeButton">Remove</button>
+            </div>
+          </div>
+        </div>
+        <div class="content-area">
+          <div class="instructions">Enter information to make QR Code</div>
+          <div id="input-area" class="input-area"></div>
+          <canvas id="qrCodeCanvas"></canvas>
+        </div>
       </div>
     </div>
-  </div>
-  <script>
-    function setupGiveNumber() {
-      const firstName = localStorage.getItem("firstName") ?? "";
-      const firstNameInput = document.querySelector(
-        "#giveNumber [name=firstName]"
-      );
-      firstNameInput.value = firstName;
-      firstNameInput.oninput = (event) => {
-        const newFirstName = event.target.value;
-        localStorage.setItem("firstName", newFirstName);
-        refreshCanvas(
-          vcard.buildPhoneCard(
-            localStorage.getItem("firstName") ?? "",
-            localStorage.getItem("lastName") ?? "",
-            localStorage.getItem("phoneNumber") ?? ""
-          )
-        );
-      };
-
-      const lastName = localStorage.getItem("lastName") ?? "";
-      const lastNameInput = document.querySelector(
-        "#giveNumber [name=lastName]"
-      );
-      lastNameInput.value = lastName;
-      lastNameInput.oninput = (event) => {
-        const newLastName = event.target.value;
-        localStorage.setItem("lastName", newLastName);
-        refreshCanvas(
-          vcard.buildPhoneCard(
-            localStorage.getItem("firstName") ?? "",
-            localStorage.getItem("lastName") ?? "",
-            localStorage.getItem("phoneNumber") ?? ""
-          )
-        );
-      };
-
-      const phoneNumber = localStorage.getItem("phoneNumber") ?? "";
-      const phoneNumberInput = document.querySelector(
-        "#giveNumber [name=phoneNumber]"
-      );
-      phoneNumberInput.value = phoneNumber;
-      phoneNumberInput.oninput = (event) => {
-        const newPhoneNumber = event.target.value;
-        localStorage.setItem("phoneNumber", newPhoneNumber);
-        refreshCanvas(
-          vcard.buildPhoneCard(
-            localStorage.getItem("firstName") ?? "",
-            localStorage.getItem("lastName") ?? "",
-            localStorage.getItem("phoneNumber") ?? ""
-          )
-        );
-      };
-
-      refreshCanvas(
-        vcard.buildPhoneCard(
-          localStorage.getItem("firstName") ?? "",
-          localStorage.getItem("lastName") ?? "",
-          localStorage.getItem("phoneNumber") ?? ""
-        )
-      );
-    }
-
-    function setupGiveEmail() {
-      const firstName = localStorage.getItem("firstName") ?? "";
-      const firstNameInput = document.querySelector(
-        "#giveEmail [name=firstName]"
-      );
-      firstNameInput.value = firstName;
-      firstNameInput.oninput = (event) => {
-        const newFirstName = event.target.value;
-        localStorage.setItem("firstName", newFirstName);
-        refreshCanvas(
-          vcard.buildEmailCard(
-            localStorage.getItem("firstName") ?? "",
-            localStorage.getItem("lastName") ?? "",
-            localStorage.getItem("emailAddress") ?? ""
-          )
-        );
-      };
-
-      const lastName = localStorage.getItem("lastName") ?? "";
-      const lastNameInput = document.querySelector(
-        "#giveEmail [name=lastName]"
-      );
-      lastNameInput.value = lastName;
-      lastNameInput.oninput = (event) => {
-        const newLastName = event.target.value;
-        localStorage.setItem("lastName", newLastName);
-        refreshCanvas(
-          vcard.buildEmailCard(
-            localStorage.getItem("firstName") ?? "",
-            localStorage.getItem("lastName") ?? "",
-            localStorage.getItem("emailAddress") ?? ""
-          )
-        );
-      };
-
-      const emailAddress = localStorage.getItem("emailAddress") ?? "";
-      const emailAddressInput = document.querySelector(
-        "#giveEmail [name=emailAddress]"
-      );
-      emailAddressInput.value = emailAddress;
-      emailAddressInput.oninput = (event) => {
-        const newEmailAddress = event.target.value;
-        localStorage.setItem("emailAddress", newEmailAddress);
-        refreshCanvas(
-          vcard.buildEmailCard(
-            localStorage.getItem("firstName") ?? "",
-            localStorage.getItem("lastName") ?? "",
-            localStorage.getItem("emailAddress") ?? ""
-          )
-        );
-      };
-
-      refreshCanvas(
-        vcard.buildEmailCard(
-          localStorage.getItem("firstName") ?? "",
-          localStorage.getItem("lastName") ?? "",
-          localStorage.getItem("emailAddress") ?? ""
-        )
-      );
-    }
-
-    function setupGiveWebLink() {
-      const webLink = localStorage.getItem("webLink") ?? "";
-      const webLinkInput = document.querySelector(
-        "#giveWebLink [name=webLink]"
-      );
-      webLinkInput.value = webLink;
-      webLinkInput.oninput = (event) => {
-        const newWebLink = event.target.value;
-        localStorage.setItem("webLink", newWebLink);
-        refreshCanvas(localStorage.getItem("webLink") ?? "");
-      };
-      refreshCanvas(localStorage.getItem("webLink") ?? "");
-    }
-
-    function setupGiveHandPass() {
-      const copiedNotification = document.querySelector(
-        "#giveHandPass [name=copiedNotification]"
-      );
-      copiedNotification.style.display = "none";
-
-      const handPassLinkInput = document.querySelector(
-        "#giveHandPass [name=handPassLink]"
-      );
-      handPassLinkInput.onclick = (event) => {
-        handPassLinkInput.select();
-        handPassLinkInput.setSelectionRange(0, 99999); // For mobile devices
-        navigator.clipboard.writeText(handPassLinkInput.value);
-        copiedNotification.style.display = "block";
-        setTimeout(function () {
-          copiedNotification.style.display = "none";
-        }, 3000);
-      };
-      refreshCanvas(handPassLinkInput.value);
-    }
-
-    function setFunction(functionName) {
-      localStorage.setItem("selectedFunction", functionName);
-      var functions = document.querySelectorAll(".function");
-      for (i = 0; i < functions.length; ++i) {
-        var element = functions[i];
-        element.style.display = element.id == functionName ? "flex" : "none";
-      }
-
-      switch (functionName) {
-        case "giveNumber":
-          setupGiveNumber();
-          break;
-        case "giveEmail":
-          setupGiveEmail();
-          break;
-        case "giveWebLink":
-          setupGiveWebLink();
-          break;
-        case "giveHandPass":
-          setupGiveHandPass();
-          break;
-      }
-    }
-
-    initialize();
-    function initialize() {
-      let selectedFunction =
-        localStorage.getItem("selectedFunction") ?? "giveNumber";
-      functionSelector.value = selectedFunction;
-      setFunction(selectedFunction);
-    }
-
-    function refreshCanvas(text) {
-      const code = text
-        ? qrcodegen.QrCode.encodeText(text, qrcodegen.QrCode.Ecc.MEDIUM)
-        : { size: 0 };
-      if (code.size == 0) {
-        qrCodeCanvas.style.display = "none";
-      } else {
-        qrCodeCanvas.style.display = "block";
-
-        const rootStyle = getComputedStyle(document.querySelector(":root"));
-        const dark = rootStyle.getPropertyValue("--dark");
-        const light = rootStyle.getPropertyValue("--light");
-        const context = qrCodeCanvas.getContext("2d");
-        drawCodeToCanvas(qrCodeCanvas, context, code, dark, light);
-      }
-    }
-
-    function drawCodeToCanvas(canvas, context, code, dark, light) {
-      canvas.width = code.size + 4;
-      canvas.height = code.size + 4;
-
-      for (let y = 0; y < canvas.height; y++) {
-        for (let x = 0; x < canvas.width; x++) {
-          if (
-            x == 0 ||
-            y == 0 ||
-            x == canvas.width - 1 ||
-            y == canvas.height - 1
-          ) {
-            // outer outline
-            context.fillStyle = dark;
-          } else if (
-            x == 1 ||
-            y == 1 ||
-            x == canvas.width - 2 ||
-            y == canvas.height - 2
-          ) {
-            // inner outline
-            context.fillStyle = light;
-          } else {
-            // code
-            context.fillStyle = code.modules[y - 2][x - 2] ? dark : light;
-          }
-          context.fillRect(x, y, 1, 1);
-        }
-      }
-    }
-  </script>
-</body>
+    <script src="js/app.js"></script>
+  </body>
+</html>

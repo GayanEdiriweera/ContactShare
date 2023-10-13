@@ -1,4 +1,17 @@
 class vcard {
+  static buildContactCard(firstname, lastname, phone, email) {
+    if (!firstname && !lastname && !phone && !email) {
+      return "";
+    }
+    return `\
+BEGIN:VCARD
+VERSION:4.0
+FN:${escape(firstname)} ${escape(lastname)}
+TEL:${escape(phone)}
+EMAIL:${escape(email)}
+END:VCARD`;
+  }
+
   static buildPhoneCard(firstname, lastname, phone) {
     if (!firstname && !lastname && !phone) {
       return "";
