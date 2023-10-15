@@ -4,7 +4,7 @@ Hand Pass is an easy way to make and present QR Codes for other people to scan. 
 
 ## Usage
 
-Hand Pass is designed to be used from your phone’s Home Screen for quick access. If you want to use Hand Pass, the easiest way is to visit https://handpass.app and install it. The next time you want to give your contact information, social media profile or website to someone in person, try using Hand Pass.
+Hand Pass is designed to be used from your phone’s Home Screen for quick access. If you want to use Hand Pass, the easiest way is to visit https://handpass.app/ and install it. The next time you want to give your contact information, social media profile or website to someone in person, try using Hand Pass.
 
 ## Development
 
