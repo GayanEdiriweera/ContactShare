@@ -4,11 +4,11 @@ Hand Pass is an easy way to make and present QR Codes for other people to scan. 
 
 ## Usage
 
-Hand Pass is designed to be used from your phone’s Home Screen for quick access. If you want to use Hand Pass, visit https://handpass.app and install it. The next time you want to give your phone number or email address to someone in person, try using Hand Pass. If Hand Pass proves useful, consider sharing it with the “Give Hand Pass App” function.
+Hand Pass is designed to be used from your phone’s Home Screen for quick access. If you want to use Hand Pass, the easiest way is to visit https://handpass.app/ and install it. The next time you want to give your contact information, social media profile or website to someone in person, try using Hand Pass.
 
-## Functions
+## Development
 
-The initial release of Hand Pass has three functions, "Give Phone Number", "Give Email Address" and "Give Hand Pass App". Hand Pass is designed to have an expanding set of functions that represent different use cases.
+Hand Pass is developed as a Progressive Web App (PWA). The source code for Hand Pass available in this repository and is hosted at https://main.handpass.app/. Mobile app versions of Hand Pass for iOS and Android were built using https://www.pwabuilder.com/
 
 ## Attribution
 
