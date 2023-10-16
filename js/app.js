@@ -1,3 +1,9 @@
+const rootStyle = getComputedStyle(document.documentElement);
+const colors = {
+  dark: rootStyle.getPropertyValue("--dark"),
+  light: rootStyle.getPropertyValue("--light"),
+};
+
 const elements = {
   listView: document.getElementById("listView"),
   detailView: document.getElementById("detailView"),
@@ -25,45 +31,6 @@ let activeItemKey = null;
 
 removeEmptyItemsFromAllItems();
 updateView();
-
-function refreshCanvas(canvas, text) {
-  const code = text
-    ? qrcodegen.QrCode.encodeText(text, qrcodegen.QrCode.Ecc.MEDIUM)
-    : { size: 0 };
-  canvas.style.display = code.size ? "block" : "none";
-  if (code.size) drawCodeToCanvas(canvas, code);
-}
-
-function drawCodeToCanvas(canvas, code) {
-  const { dark, light } = getColors();
-  const context = canvas.getContext("2d");
-  canvas.width = code.size + 4;
-  canvas.height = code.size + 4;
-  for (let y = 0; y < canvas.height; y++) {
-    for (let x = 0; x < canvas.width; x++) {
-      context.fillStyle = getFillStyle(x, y, canvas, code, dark, light);
-      context.fillRect(x, y, 1, 1);
-    }
-  }
-}
-
-function getFillStyle(x, y, canvas, code, dark, light) {
-  const isOuterOutline =
-    x == 0 || y == 0 || x == canvas.width - 1 || y == canvas.height - 1;
-  const isInnerOutline =
-    x == 1 || y == 1 || x == canvas.width - 2 || y == canvas.height - 2;
-  if (isOuterOutline) return dark;
-  if (isInnerOutline) return light;
-  return code.modules[y - 2][x - 2] ? dark : light;
-}
-
-function getColors() {
-  const rootStyle = getComputedStyle(document.documentElement);
-  return {
-    dark: rootStyle.getPropertyValue("--dark"),
-    light: rootStyle.getPropertyValue("--light"),
-  };
-}
 
 function itemDataToString(item) {
   if (item.type === ItemType.ContactInformation) {
@@ -128,17 +95,22 @@ function populateDetailView() {
     .replaceChildren(...inputElements);
   // Move the canvas refreshing logic here
   if (activeItem.type == ItemType.ContactInformation) {
-    refreshCanvas(
+    qrcanvas.encodeAndDrawToCanvas(
       qrCodeCanvas,
       vcard.buildContactCard(
         activeItem.firstName ?? "",
         activeItem.lastName ?? "",
         activeItem.phoneNumber ?? "",
         activeItem.emailAddress ?? ""
-      )
+      ),
+      colors
     );
   } else if (activeItem.type == ItemType.WebLink) {
-    refreshCanvas(qrCodeCanvas, activeItem.webLink ?? "");
+    qrcanvas.encodeAndDrawToCanvas(
+      qrCodeCanvas,
+      activeItem.webLink ?? "",
+      colors
+    );
   }
 }
 
@@ -163,14 +135,15 @@ function createInputElementsForItem(itemData) {
       inputElement.oninput = (event) => {
         itemData[field.name] = event.target.value;
         storeItems();
-        refreshCanvas(
+        qrcanvas.encodeAndDrawToCanvas(
           qrCodeCanvas,
           vcard.buildContactCard(
             itemData.firstName ?? "",
             itemData.lastName ?? "",
             itemData.phoneNumber ?? "",
             itemData.emailAddress ?? ""
-          )
+          ),
+          colors
         );
       };
 
@@ -186,7 +159,11 @@ function createInputElementsForItem(itemData) {
     webLinkElement.oninput = (event) => {
       itemData.webLink = event.target.value;
       storeItems();
-      refreshCanvas(qrCodeCanvas, itemData.webLink ?? "");
+      qrcanvas.encodeAndDrawToCanvas(
+        qrCodeCanvas,
+        itemData.webLink ?? "",
+        colors
+      );
     };
 
     inputElements.push(webLinkElement);
