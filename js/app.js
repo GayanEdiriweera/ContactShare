@@ -7,16 +7,36 @@ const colors = {
 const elements = {
   listView: document.getElementById("listView"),
   detailView: document.getElementById("detailView"),
+  instructions: document.getElementById("instructions"),
   qrCodeCanvas: document.getElementById("qrCodeCanvas"),
   addContactInformation: document.getElementById("addContactInformation"),
   addWebLink: document.getElementById("addWebLink"),
+  addReturnCall: document.getElementById("addReturnCall"),
+  addReturnMessage: document.getElementById("addReturnMessage"),
+  addReturnEmail: document.getElementById("addReturnEmail"),
   doneButton: document.getElementById("doneButton"),
   removeButton: document.getElementById("removeButton"),
 };
+elements.addContactInformation.addEventListener("click", () =>
+  addItem(ItemType.ContactInformation)
+);
+elements.addWebLink.addEventListener("click", () => addItem(ItemType.WebLink));
+elements.addReturnCall.addEventListener("click", () =>
+  addItem(ItemType.ReturnCall)
+);
+elements.addReturnMessage.addEventListener("click", () =>
+  addItem(ItemType.ReturnMessage)
+);
+elements.addReturnEmail.addEventListener("click", () =>
+  addItem(ItemType.ReturnEmail)
+);
 
 const ItemType = {
   ContactInformation: "ContactInformation",
   WebLink: "WebLink",
+  ReturnCall: "ReturnCall",
+  ReturnMessage: "ReturnMessage",
+  ReturnEmail: "ReturnEmail",
 };
 
 const DATA_VERSION = "1";
@@ -32,7 +52,25 @@ let activeItemKey = null;
 removeEmptyItemsFromAllItems();
 updateView();
 
-function itemDataToString(item) {
+function isItemEmpty(item) {
+  if (item.type === ItemType.ContactInformation)
+    return (
+      !item.firstName &&
+      !item.lastName &&
+      !item.phoneNumber &&
+      !item.emailAddress
+    );
+  else if (item.type === ItemType.WebLink) return !item.webLink;
+  else if (item.type === ItemType.ReturnCall) {
+    return !item.phoneNumber;
+  } else if (item.type === ItemType.ReturnMessage) {
+    return !item.phoneNumber;
+  } else if (item.type === ItemType.ReturnEmail) {
+    return !item.emailAddress;
+  }
+}
+
+function itemToString(item) {
   if (item.type === ItemType.ContactInformation) {
     const components = [];
 
@@ -49,18 +87,48 @@ function itemDataToString(item) {
     }
 
     return components.join("\r\n");
+  } else if (item.type == ItemType.WebLink) {
+    return item.webLink;
+  } else if (item.type === ItemType.ReturnCall) {
+    return `Return Call: ${item.phoneNumber}`;
+  } else if (item.type === ItemType.ReturnMessage) {
+    return `Return Message: ${item.phoneNumber}`;
+  } else if (item.type === ItemType.ReturnEmail) {
+    return `Return Email: ${item.emailAddress}`;
   }
-
-  return item.webLink;
 }
 
-function isEmpty(item) {
-  return item.type === ItemType.ContactInformation
-    ? !item.firstName &&
-        !item.lastName &&
-        !item.phoneNumber &&
-        !item.emailAddress
-    : !item.webLink;
+function itemInstructions(item) {
+  if (item.type === ItemType.ContactInformation) {
+    return "Enter information to make QR Code. Scanner will be prompted to add the contact information into address book.";
+  } else if (item.type == ItemType.WebLink) {
+    return "Enter information to make QR Code. Scanner will be prompted to open the link.";
+  } else if (item.type === ItemType.ReturnCall) {
+    return "Enter information to make QR Code. Scanner will be prompted to call the number.";
+  } else if (item.type === ItemType.ReturnMessage) {
+    return "Enter information to make QR Code. Scanner will be prompted to message the number.";
+  } else if (item.type === ItemType.ReturnEmail) {
+    return "Enter information to make QR Code. Scanner will be prompted to email the address.";
+  }
+}
+
+function itemToEncodedData(item) {
+  if (item.type === ItemType.ContactInformation) {
+    return vcard.buildContactCard(
+      item.firstName ?? "",
+      item.lastName ?? "",
+      item.phoneNumber ?? "",
+      item.emailAddress ?? ""
+    );
+  } else if (item.type == ItemType.WebLink) {
+    return encodeURI(item.webLink ?? "");
+  } else if (item.type === ItemType.ReturnCall) {
+    return `tel:${item.phoneNumber ?? ""}`;
+  } else if (item.type === ItemType.ReturnMessage) {
+    return `sms:${item.phoneNumber ?? ""}`;
+  } else if (item.type === ItemType.ReturnEmail) {
+    return encodeURI(`mailto:${item.emailAddress ?? ""}`);
+  }
 }
 
 function updateView() {
@@ -78,7 +146,7 @@ function populateListView() {
   const listElements = Object.keys(allItems).map((key) => {
     const itemElement = document.createElement("div");
     itemElement.className = "item";
-    itemElement.textContent = itemDataToString(allItems[key]);
+    itemElement.textContent = itemToString(allItems[key]);
     itemElement.addEventListener("click", () => setActiveItem(key));
     return itemElement;
   });
@@ -89,29 +157,17 @@ function populateListView() {
 
 function populateDetailView() {
   const activeItem = allItems[activeItemKey];
+  instructions.innerHTML = itemInstructions(activeItem);
   const inputElements = createInputElementsForItem(activeItem);
   elements.detailView
     .querySelector("#input-area")
     .replaceChildren(...inputElements);
-  // Move the canvas refreshing logic here
-  if (activeItem.type == ItemType.ContactInformation) {
-    qrcanvas.encodeAndDrawToCanvas(
-      qrCodeCanvas,
-      vcard.buildContactCard(
-        activeItem.firstName ?? "",
-        activeItem.lastName ?? "",
-        activeItem.phoneNumber ?? "",
-        activeItem.emailAddress ?? ""
-      ),
-      colors
-    );
-  } else if (activeItem.type == ItemType.WebLink) {
-    qrcanvas.encodeAndDrawToCanvas(
-      qrCodeCanvas,
-      activeItem.webLink ?? "",
-      colors
-    );
-  }
+
+  qrcanvas.encodeAndDrawToCanvas(
+    qrCodeCanvas,
+    itemToEncodedData(activeItem),
+    colors
+  );
 }
 
 function createInputElementsForItem(itemData) {
@@ -137,12 +193,7 @@ function createInputElementsForItem(itemData) {
         storeItems();
         qrcanvas.encodeAndDrawToCanvas(
           qrCodeCanvas,
-          vcard.buildContactCard(
-            itemData.firstName ?? "",
-            itemData.lastName ?? "",
-            itemData.phoneNumber ?? "",
-            itemData.emailAddress ?? ""
-          ),
+          itemToEncodedData(itemData),
           colors
         );
       };
@@ -161,12 +212,76 @@ function createInputElementsForItem(itemData) {
       storeItems();
       qrcanvas.encodeAndDrawToCanvas(
         qrCodeCanvas,
-        itemData.webLink ?? "",
+        itemToEncodedData(itemData),
         colors
       );
     };
 
     inputElements.push(webLinkElement);
+  } else if (itemData.type == ItemType.ReturnCall) {
+    const phoneNumberElement = document.createElement("input");
+    phoneNumberElement.type = "tel";
+    phoneNumberElement.name = "phoneNumber";
+    phoneNumberElement.placeholder = "My Phone Number";
+    phoneNumberElement.value = itemData.phoneNumber || "";
+
+    phoneNumberElement.oninput = (event) => {
+      itemData.phoneNumber = event.target.value;
+      storeItems();
+      qrcanvas.encodeAndDrawToCanvas(
+        qrCodeCanvas,
+        itemToEncodedData(itemData),
+        colors
+      );
+    };
+
+    inputElements.push(phoneNumberElement);
+  } else if (itemData.type == ItemType.ReturnMessage) {
+    const phoneNumberElement = document.createElement("input");
+    phoneNumberElement.type = "tel";
+    phoneNumberElement.name = "phoneNumber";
+    phoneNumberElement.placeholder = "My Number";
+    phoneNumberElement.value = itemData.phoneNumber || "";
+
+    phoneNumberElement.oninput = updateReturnMessageQR;
+
+    function updateReturnMessageQR(event) {
+      if (event.target.name === "phoneNumber") {
+        itemData.phoneNumber = event.target.value;
+      }
+
+      storeItems();
+      qrcanvas.encodeAndDrawToCanvas(
+        qrCodeCanvas,
+        itemToEncodedData(itemData),
+        colors
+      );
+    }
+
+    inputElements.push(phoneNumberElement);
+  } else if (itemData.type == ItemType.ReturnEmail) {
+    const emailAddressElement = document.createElement("input");
+    emailAddressElement.type = "email";
+    emailAddressElement.name = "emailAddress";
+    emailAddressElement.placeholder = "Email Address";
+    emailAddressElement.value = itemData.emailAddress || "";
+
+    emailAddressElement.oninput = updateReturnEmailQR;
+
+    function updateReturnEmailQR(event) {
+      if (event.target.name === "emailAddress") {
+        itemData.emailAddress = event.target.value;
+      }
+
+      storeItems();
+      qrcanvas.encodeAndDrawToCanvas(
+        qrCodeCanvas,
+        itemToEncodedData(itemData),
+        colors
+      );
+    }
+
+    inputElements.push(emailAddressElement);
   }
 
   return inputElements;
@@ -185,17 +300,24 @@ function storeItems() {
   localStorage.setItem("items", JSON.stringify(allItems));
 }
 
-elements.addContactInformation.addEventListener("click", () =>
-  addItem(ItemType.ContactInformation)
-);
-elements.addWebLink.addEventListener("click", () => addItem(ItemType.WebLink));
+function initializeItem(type) {
+  if (type === ItemType.ContactInformation)
+    return {
+      type,
+      firstName: "",
+      lastName: "",
+      phoneNumber: "",
+      emailAddress: "",
+    };
+  else if (type === ItemType.WebLink) return { type, webLink: "" };
+  else if (type === ItemType.ReturnCall) return { type, phoneNumber: "" };
+  else if (type === ItemType.ReturnMessage) return { type, phoneNumber: "" };
+  else if (type === ItemType.ReturnEmail) return { type, emailAddress: "" };
+}
 
 function addItem(type) {
   const id = Date.now();
-  allItems[id] =
-    type === ItemType.ContactInformation
-      ? { type, firstName: "", lastName: "", phoneNumber: "", emailAddress: "" }
-      : { type, webLink: "" };
+  allItems[id] = initializeItem(type);
   storeItems();
   setActiveItem(id);
 }
@@ -204,7 +326,7 @@ elements.doneButton.addEventListener("click", finalizeActiveItem);
 elements.removeButton.addEventListener("click", removeActiveItem);
 
 function finalizeActiveItem() {
-  if (isEmpty(allItems[activeItemKey])) delete allItems[activeItemKey];
+  if (isItemEmpty(allItems[activeItemKey])) delete allItems[activeItemKey];
   storeItems();
   activeItemKey = null;
   updateView();
@@ -219,7 +341,7 @@ function removeActiveItem() {
 
 function removeEmptyItemsFromAllItems() {
   for (let key in allItems) {
-    if (isEmpty(allItems[key])) {
+    if (isItemEmpty(allItems[key])) {
       delete allItems[key];
     }
   }
