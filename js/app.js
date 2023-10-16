@@ -11,9 +11,9 @@ const elements = {
   qrCodeCanvas: document.getElementById("qrCodeCanvas"),
   addContactInformation: document.getElementById("addContactInformation"),
   addWebLink: document.getElementById("addWebLink"),
-  addReturnCall: document.getElementById("addReturnCall"),
-  addReturnMessage: document.getElementById("addReturnMessage"),
-  addReturnEmail: document.getElementById("addReturnEmail"),
+  addCallPrompt: document.getElementById("addCallPrompt"),
+  addMessagePrompt: document.getElementById("addMessagePrompt"),
+  addEmailPrompt: document.getElementById("addEmailPrompt"),
   doneButton: document.getElementById("doneButton"),
   removeButton: document.getElementById("removeButton"),
 };
@@ -21,22 +21,22 @@ elements.addContactInformation.addEventListener("click", () =>
   addItem(ItemType.ContactInformation)
 );
 elements.addWebLink.addEventListener("click", () => addItem(ItemType.WebLink));
-elements.addReturnCall.addEventListener("click", () =>
-  addItem(ItemType.ReturnCall)
+elements.addCallPrompt.addEventListener("click", () =>
+  addItem(ItemType.CallPrompt)
 );
-elements.addReturnMessage.addEventListener("click", () =>
-  addItem(ItemType.ReturnMessage)
+elements.addMessagePrompt.addEventListener("click", () =>
+  addItem(ItemType.MessagePrompt)
 );
-elements.addReturnEmail.addEventListener("click", () =>
-  addItem(ItemType.ReturnEmail)
+elements.addEmailPrompt.addEventListener("click", () =>
+  addItem(ItemType.EmailPrompt)
 );
 
 const ItemType = {
   ContactInformation: "ContactInformation",
   WebLink: "WebLink",
-  ReturnCall: "ReturnCall",
-  ReturnMessage: "ReturnMessage",
-  ReturnEmail: "ReturnEmail",
+  CallPrompt: "ReturnCall",
+  MessagePrompt: "ReturnMessage",
+  EmailPrompt: "ReturnEmail",
 };
 
 const DATA_VERSION = "1";
@@ -61,11 +61,11 @@ function isItemEmpty(item) {
       !item.emailAddress
     );
   else if (item.type === ItemType.WebLink) return !item.webLink;
-  else if (item.type === ItemType.ReturnCall) {
+  else if (item.type === ItemType.CallPrompt) {
     return !item.phoneNumber;
-  } else if (item.type === ItemType.ReturnMessage) {
+  } else if (item.type === ItemType.MessagePrompt) {
     return !item.phoneNumber;
-  } else if (item.type === ItemType.ReturnEmail) {
+  } else if (item.type === ItemType.EmailPrompt) {
     return !item.emailAddress;
   }
 }
@@ -89,26 +89,26 @@ function itemToString(item) {
     return components.join("\r\n");
   } else if (item.type == ItemType.WebLink) {
     return item.webLink;
-  } else if (item.type === ItemType.ReturnCall) {
-    return `Return Call: ${item.phoneNumber}`;
-  } else if (item.type === ItemType.ReturnMessage) {
-    return `Return Message: ${item.phoneNumber}`;
-  } else if (item.type === ItemType.ReturnEmail) {
-    return `Return Email: ${item.emailAddress}`;
+  } else if (item.type === ItemType.CallPrompt) {
+    return `Call Prompt: ${item.phoneNumber}`;
+  } else if (item.type === ItemType.MessagePrompt) {
+    return `Message Prompt: ${item.phoneNumber}`;
+  } else if (item.type === ItemType.EmailPrompt) {
+    return `Email Prompt: ${item.emailAddress}`;
   }
 }
 
 function itemInstructions(item) {
   if (item.type === ItemType.ContactInformation) {
-    return "Enter information to make QR Code. Scanner will be prompted to add the contact information into address book.";
+    return "Enter information to make a QR Code. The scanner will add the information to its address book.";
   } else if (item.type == ItemType.WebLink) {
-    return "Enter information to make QR Code. Scanner will be prompted to open the link.";
-  } else if (item.type === ItemType.ReturnCall) {
-    return "Enter information to make QR Code. Scanner will be prompted to call the number.";
-  } else if (item.type === ItemType.ReturnMessage) {
-    return "Enter information to make QR Code. Scanner will be prompted to message the number.";
-  } else if (item.type === ItemType.ReturnEmail) {
-    return "Enter information to make QR Code. Scanner will be prompted to email the address.";
+    return "Enter information to make a QR Code. The scanner will open the web link in its browser.";
+  } else if (item.type === ItemType.CallPrompt) {
+    return "Enter information to make a QR Code. The scanner will call the number.";
+  } else if (item.type === ItemType.MessagePrompt) {
+    return "Enter information to make a QR Code. The scanner will message the number.";
+  } else if (item.type === ItemType.EmailPrompt) {
+    return "Enter information to make a QR Code. The scanner will email the address.";
   }
 }
 
@@ -121,13 +121,13 @@ function itemToEncodedData(item) {
       item.emailAddress ?? ""
     );
   } else if (item.type == ItemType.WebLink) {
-    return encodeURI(item.webLink ?? "");
-  } else if (item.type === ItemType.ReturnCall) {
-    return `tel:${item.phoneNumber ?? ""}`;
-  } else if (item.type === ItemType.ReturnMessage) {
-    return `sms:${item.phoneNumber ?? ""}`;
-  } else if (item.type === ItemType.ReturnEmail) {
-    return encodeURI(`mailto:${item.emailAddress ?? ""}`);
+    return item.webLink ? encodeURI(item.webLink) : "";
+  } else if (item.type === ItemType.CallPrompt) {
+    return item.phoneNumber ? `tel:${item.phoneNumber}` : "";
+  } else if (item.type === ItemType.MessagePrompt) {
+    return item.phoneNumber ? `sms:${item.phoneNumber}` : "";
+  } else if (item.type === ItemType.EmailPrompt) {
+    return item.emailAddress ? encodeURI(`mailto:${item.emailAddress}`) : "";
   }
 }
 
@@ -218,11 +218,11 @@ function createInputElementsForItem(itemData) {
     };
 
     inputElements.push(webLinkElement);
-  } else if (itemData.type == ItemType.ReturnCall) {
+  } else if (itemData.type == ItemType.CallPrompt) {
     const phoneNumberElement = document.createElement("input");
     phoneNumberElement.type = "tel";
     phoneNumberElement.name = "phoneNumber";
-    phoneNumberElement.placeholder = "My Phone Number";
+    phoneNumberElement.placeholder = "Phone Number";
     phoneNumberElement.value = itemData.phoneNumber || "";
 
     phoneNumberElement.oninput = (event) => {
@@ -236,11 +236,11 @@ function createInputElementsForItem(itemData) {
     };
 
     inputElements.push(phoneNumberElement);
-  } else if (itemData.type == ItemType.ReturnMessage) {
+  } else if (itemData.type == ItemType.MessagePrompt) {
     const phoneNumberElement = document.createElement("input");
     phoneNumberElement.type = "tel";
     phoneNumberElement.name = "phoneNumber";
-    phoneNumberElement.placeholder = "My Number";
+    phoneNumberElement.placeholder = "Phone Number";
     phoneNumberElement.value = itemData.phoneNumber || "";
 
     phoneNumberElement.oninput = updateReturnMessageQR;
@@ -259,7 +259,7 @@ function createInputElementsForItem(itemData) {
     }
 
     inputElements.push(phoneNumberElement);
-  } else if (itemData.type == ItemType.ReturnEmail) {
+  } else if (itemData.type == ItemType.EmailPrompt) {
     const emailAddressElement = document.createElement("input");
     emailAddressElement.type = "email";
     emailAddressElement.name = "emailAddress";
@@ -310,9 +310,9 @@ function initializeItem(type) {
       emailAddress: "",
     };
   else if (type === ItemType.WebLink) return { type, webLink: "" };
-  else if (type === ItemType.ReturnCall) return { type, phoneNumber: "" };
-  else if (type === ItemType.ReturnMessage) return { type, phoneNumber: "" };
-  else if (type === ItemType.ReturnEmail) return { type, emailAddress: "" };
+  else if (type === ItemType.CallPrompt) return { type, phoneNumber: "" };
+  else if (type === ItemType.MessagePrompt) return { type, phoneNumber: "" };
+  else if (type === ItemType.EmailPrompt) return { type, emailAddress: "" };
 }
 
 function addItem(type) {
