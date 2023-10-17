@@ -100,15 +100,15 @@ function itemToString(item) {
 
 function itemInstructions(item) {
   if (item.type === ItemType.ContactInformation) {
-    return "Enter information to make a QR Code. The scanner will add the information to its address book.";
+    return "Enter information to make a QR Code. The scanner will add the information into its address book.";
   } else if (item.type == ItemType.WebLink) {
     return "Enter information to make a QR Code. The scanner will open the web link in its browser.";
   } else if (item.type === ItemType.CallPrompt) {
-    return "Enter information to make a QR Code. The scanner will call the number.";
+    return "Enter information to make a QR Code. The scanner will be prompted to call the number.";
   } else if (item.type === ItemType.MessagePrompt) {
-    return "Enter information to make a QR Code. The scanner will message the number.";
+    return "Enter information to make a QR Code. The scanner will be prompted to send a message to the number.";
   } else if (item.type === ItemType.EmailPrompt) {
-    return "Enter information to make a QR Code. The scanner will email the address.";
+    return "Enter information to make a QR Code. The scanner will be prompted to send an email to the address.";
   }
 }
 
