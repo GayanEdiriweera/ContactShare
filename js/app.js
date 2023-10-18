@@ -66,7 +66,7 @@ function isItemEmpty(item) {
   } else if (item.type === ItemType.MessagePrompt) {
     return !item.phoneNumber;
   } else if (item.type === ItemType.EmailPrompt) {
-    return !item.emailAddress;
+    return !item.emailAddress && !item.subject && !item.body;
   }
 }
 
@@ -127,7 +127,13 @@ function itemToEncodedData(item) {
   } else if (item.type === ItemType.MessagePrompt) {
     return item.phoneNumber ? `sms:${item.phoneNumber}` : "";
   } else if (item.type === ItemType.EmailPrompt) {
-    return item.emailAddress ? encodeURI(`mailto:${item.emailAddress}`) : "";
+    return item.emailAddress
+      ? encodeURI(
+          `mailto:${item.emailAddress}?subject=${item.subject ?? ""}&body=${
+            item.body ?? ""
+          }`
+        )
+      : "";
   }
 }
 
@@ -260,28 +266,31 @@ function createInputElementsForItem(itemData) {
 
     inputElements.push(phoneNumberElement);
   } else if (itemData.type == ItemType.EmailPrompt) {
-    const emailAddressElement = document.createElement("input");
-    emailAddressElement.type = "email";
-    emailAddressElement.name = "emailAddress";
-    emailAddressElement.placeholder = "Email Address";
-    emailAddressElement.value = itemData.emailAddress || "";
+    const fields = [
+      { name: "emailAddress", type: "email", placeholder: "Email Address" },
+      { name: "subject", type: "text", placeholder: "Subject" },
+      { name: "body", type: "text", placeholder: "Body" },
+    ];
 
-    emailAddressElement.oninput = updateReturnEmailQR;
+    fields.forEach((field) => {
+      const inputElement = document.createElement("input");
+      inputElement.type = field.type;
+      inputElement.name = field.name;
+      inputElement.placeholder = field.placeholder;
+      inputElement.value = itemData[field.name] || "";
 
-    function updateReturnEmailQR(event) {
-      if (event.target.name === "emailAddress") {
-        itemData.emailAddress = event.target.value;
-      }
+      inputElement.oninput = (event) => {
+        itemData[field.name] = event.target.value;
+        storeItems();
+        qrcanvas.encodeAndDrawToCanvas(
+          qrCodeCanvas,
+          itemToEncodedData(itemData),
+          colors
+        );
+      };
 
-      storeItems();
-      qrcanvas.encodeAndDrawToCanvas(
-        qrCodeCanvas,
-        itemToEncodedData(itemData),
-        colors
-      );
-    }
-
-    inputElements.push(emailAddressElement);
+      inputElements.push(inputElement);
+    });
   }
 
   return inputElements;
