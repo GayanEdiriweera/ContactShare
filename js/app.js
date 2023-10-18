@@ -34,9 +34,9 @@ elements.addEmailPrompt.addEventListener("click", () =>
 const ItemType = {
   ContactInformation: "ContactInformation",
   WebLink: "WebLink",
-  CallPrompt: "ReturnCall",
-  MessagePrompt: "ReturnMessage",
-  EmailPrompt: "ReturnEmail",
+  CallPrompt: "CallPrompt",
+  MessagePrompt: "MessagePrompt",
+  EmailPrompt: "EmailPrompt",
 };
 
 const DATA_VERSION = "1";
@@ -249,9 +249,9 @@ function createInputElementsForItem(itemData) {
     phoneNumberElement.placeholder = "Phone Number";
     phoneNumberElement.value = itemData.phoneNumber || "";
 
-    phoneNumberElement.oninput = updateReturnMessageQR;
+    phoneNumberElement.oninput = updateMessagePromptQR;
 
-    function updateReturnMessageQR(event) {
+    function updateMessagePromptQR(event) {
       if (event.target.name === "phoneNumber") {
         itemData.phoneNumber = event.target.value;
       }
