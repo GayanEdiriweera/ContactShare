@@ -249,9 +249,7 @@ function createInputElementsForItem(itemData) {
     phoneNumberElement.placeholder = "Phone Number";
     phoneNumberElement.value = itemData.phoneNumber || "";
 
-    phoneNumberElement.oninput = updateMessagePromptQR;
-
-    function updateMessagePromptQR(event) {
+    phoneNumberElement.oninput = (event) => {
       if (event.target.name === "phoneNumber") {
         itemData.phoneNumber = event.target.value;
       }
@@ -262,7 +260,7 @@ function createInputElementsForItem(itemData) {
         itemToEncodedData(itemData),
         colors
       );
-    }
+    };
 
     inputElements.push(phoneNumberElement);
   } else if (itemData.type == ItemType.EmailPrompt) {
