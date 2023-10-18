@@ -3,6 +3,8 @@
   <head>
     <script src="js/qrcodegen-v1.8.0-es6.js"></script>
     <script src="js/vcard.js"></script>
+    <script src="js/qrcanvas.js"></script>
+
     <title>Hand Pass</title>
     <link rel="icon" href="assets/icons/icon-180x180.png" type="image/png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,6 +35,9 @@
                 New Contact Information
               </button>
               <button id="addWebLink">New Web Link</button>
+              <button id="addCallPrompt">New Call Prompt</button>
+              <button id="addMessagePrompt">New Message Prompt</button>
+              <button id="addEmailPrompt">New Email Prompt</button>
             </div>
           </div>
         </div>
@@ -55,7 +60,7 @@
           </div>
         </div>
         <div class="content-area">
-          <div class="instructions">Enter information to make QR Code</div>
+          <div id="instructions" class="instructions"></div>
           <div id="input-area" class="input-area"></div>
           <canvas id="qrCodeCanvas"></canvas>
         </div>
