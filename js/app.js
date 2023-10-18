@@ -123,9 +123,9 @@ function itemToEncodedData(item) {
   } else if (item.type == ItemType.WebLink) {
     return item.webLink ? encodeURI(item.webLink) : "";
   } else if (item.type === ItemType.CallPrompt) {
-    return item.phoneNumber ? `tel:${item.phoneNumber}` : "";
+    return item.phoneNumber ? encodeURI(`tel:${item.phoneNumber}`) : "";
   } else if (item.type === ItemType.MessagePrompt) {
-    return item.phoneNumber ? `sms:${item.phoneNumber}` : "";
+    return item.phoneNumber ? encodeURI(`sms:${item.phoneNumber}`) : "";
   } else if (item.type === ItemType.EmailPrompt) {
     return item.emailAddress
       ? encodeURI(
