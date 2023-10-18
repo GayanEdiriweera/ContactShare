@@ -321,7 +321,8 @@ function initializeItem(type) {
   else if (type === ItemType.WebLink) return { type, webLink: "" };
   else if (type === ItemType.CallPrompt) return { type, phoneNumber: "" };
   else if (type === ItemType.MessagePrompt) return { type, phoneNumber: "" };
-  else if (type === ItemType.EmailPrompt) return { type, emailAddress: "" };
+  else if (type === ItemType.EmailPrompt)
+    return { type, emailAddress: "", subject: "", body: "" };
 }
 
 function addItem(type) {
