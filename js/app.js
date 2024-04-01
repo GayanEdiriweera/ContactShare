@@ -15,6 +15,7 @@ const elements = {
   addMessagePrompt: document.getElementById("addMessagePrompt"),
   addEmailPrompt: document.getElementById("addEmailPrompt"),
   doneButton: document.getElementById("doneButton"),
+  saveToFileButton: document.getElementById("saveToFileButton"),
   removeButton: document.getElementById("removeButton"),
 };
 elements.addContactInformation.addEventListener("click", () =>
@@ -331,6 +332,7 @@ function addItem(type) {
 }
 
 elements.doneButton.addEventListener("click", finalizeActiveItem);
+elements.saveToFileButton.addEventListener("click", saveQrCodeToFile);
 elements.removeButton.addEventListener("click", removeActiveItem);
 
 function finalizeActiveItem() {
@@ -338,6 +340,15 @@ function finalizeActiveItem() {
   storeItems();
   activeItemKey = null;
   updateView();
+}
+
+function saveQrCodeToFile() {
+  const canvas = document.getElementById("qrCodeCanvas");
+  const dataURL = canvas.toDataURL("image/png");
+  const link = document.createElement("a");
+  link.href = dataURL;
+  link.download = "qr_code.png";
+  link.click();
 }
 
 function removeActiveItem() {
@@ -368,3 +379,4 @@ document.onclick = function (event) {
     );
   }
 };
+
