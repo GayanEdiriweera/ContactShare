@@ -346,7 +346,9 @@ function saveQrCodeToFile() {
   if (isItemEmpty(allItems[activeItemKey])) return;
   const link = document.createElement("a");
   link.href = qrCodeCanvas.toDataURL("image/png");
-  link.download = "qr_code.png";
+  const date = new Date();
+  let dateString = date.toISOString();
+  link.download = dateString + "_qr_code.png";
   link.click();
 }
 
