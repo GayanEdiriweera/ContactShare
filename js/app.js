@@ -343,10 +343,9 @@ function finalizeActiveItem() {
 }
 
 function saveQrCodeToFile() {
-  const canvas = document.getElementById("qrCodeCanvas");
-  const dataURL = canvas.toDataURL("image/png");
+  if (isItemEmpty(allItems[activeItemKey])) return;
   const link = document.createElement("a");
-  link.href = dataURL;
+  link.href = qrCodeCanvas.toDataURL("image/png");
   link.download = "qr_code.png";
   link.click();
 }
