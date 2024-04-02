@@ -1,54 +1,56 @@
 class qrcanvas {
-  static encodeAndDrawToCanvas(canvas, text, colors, resolution = 400) {
+  static encodeAndDrawToCanvas(canvas, text, colors, maxResolution = 400) {
     const code = text
       ? qrcodegen.QrCode.encodeText(text, qrcodegen.QrCode.Ecc.MEDIUM)
       : { size: 0 };
     canvas.style.display = code.size ? "block" : "none";
-    if (code.size) drawCodeToCanvas(canvas, code, colors, resolution);
+    if (code.size) drawCodeToCanvas(canvas, code, colors, maxResolution);
   }
 }
 
-function drawCodeToCanvas(canvas, code, colors, resolution) {
+function drawCodeToCanvas(canvas, code, colors, maxResolution) {
   const { dark, light } = colors;
   const context = canvas.getContext("2d");
-  const codeSizeWithBorder = code.size + 4;
-  const cellSizePixels = resolution / codeSizeWithBorder;
-  canvas.width = resolution;
-  canvas.height = resolution;
-  context.fillStyle = light;
-  context.fillRect(0, 0, resolution, resolution);
+  const totalSizeInModules = code.size + 4; // Including border
+  const cellSizeInPixels = Math.floor(maxResolution / totalSizeInModules);
+  const totalSizeInPixels = totalSizeInModules * cellSizeInPixels;
 
-  for (let y = 0; y < codeSizeWithBorder; y++) {
-    for (let x = 0; x < codeSizeWithBorder; x++) {
+  canvas.width = totalSizeInPixels;
+  canvas.height = totalSizeInPixels;
+  context.fillStyle = light;
+  context.fillRect(0, 0, totalSizeInPixels, totalSizeInPixels);
+
+  for (let y = 0; y < totalSizeInModules; y++) {
+    for (let x = 0; x < totalSizeInModules; x++) {
       context.fillStyle = getFillStyle(
         x,
         y,
-        codeSizeWithBorder,
+        totalSizeInModules,
         code,
         dark,
         light
       );
       context.fillRect(
-        x * cellSizePixels - 1,
-        y * cellSizePixels - 1,
-        cellSizePixels + 1,
-        cellSizePixels + 1
+        x * cellSizeInPixels,
+        y * cellSizeInPixels,
+        cellSizeInPixels,
+        cellSizeInPixels
       );
     }
   }
 }
 
-function getFillStyle(x, y, codeSizeWithBorder, code, dark, light) {
+function getFillStyle(x, y, totalSizeInModules, code, dark, light) {
   const isOuterOutline =
     x == 0 ||
     y == 0 ||
-    x == codeSizeWithBorder - 1 ||
-    y == codeSizeWithBorder - 1;
+    x == totalSizeInModules - 1 ||
+    y == totalSizeInModules - 1;
   const isInnerOutline =
     x == 1 ||
     y == 1 ||
-    x == codeSizeWithBorder - 2 ||
-    y == codeSizeWithBorder - 2;
+    x == totalSizeInModules - 2 ||
+    y == totalSizeInModules - 2;
   if (isOuterOutline) return dark;
   if (isInnerOutline) return light;
   return code.modules[y - 2][x - 2] ? dark : light;
